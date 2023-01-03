@@ -2,10 +2,16 @@
 
 Garage Garage :: instance = Garage();
 Voiture Garage :: ProjetEnCours = Voiture();
+
+Employe* Garage::pE = NULL;
+
 Garage :: Garage()
 {   
     modeles = Vecteur <Modele>(50);
     options = Vecteur <Option>(50);
+    employes = Vecteur <Employe>(50);
+
+    ajouteEmploye("Emma", "Karen Ah", "Emma", "Administratif");
 }
 Garage :: ~Garage()
 {
@@ -214,4 +220,8 @@ Vecteur<Modele> Garage :: getModeles()
 Vecteur<Option> Garage :: getOptions()
 {
     return options;
+}
+Vecteur <Employe> Garage :: getEmployes()
+{
+    return employes;
 }

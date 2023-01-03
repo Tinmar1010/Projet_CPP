@@ -49,17 +49,28 @@ float Option :: getPrix()const
 }
 void Option ::setCode(string c)
 {
+    if (c == "")
+        throw(OptionException("Code vide !"));
+    
+    if (c.length() > 4)
+        throw(OptionException("Code fait plus de 4 carcatères !"));
     code = c;
 }
 void Option :: setIntitule(string inti)
 {
-    intitule = inti;
+    if (inti == "")
+        throw(OptionException("L'intitule est vide !"));
+    else
+        intitule = inti;
 }
 void Option :: setPrix(float p)
 {
-    if(p>=0)
+    if (p >= 0)
         prix = p;
+    else
+        throw(OptionException("Le prix doit être positif !"));
 }
+
 Option& Option :: operator=(const Option & o)
 {
     code = o.code;
@@ -103,13 +114,19 @@ Option Option :: operator--(int)
 {
     Option temp(*this);
 
-    prix = prix - 50;
+   if(prix<50)
+        throw OptionException("Le prix de l'option ne peut pas être négatif !");
+    else
+        prix = prix -50;
 
     return temp;
 }
 Option Option :: operator--()
 {
-    prix = prix - 50;
+    if(prix<50)
+        throw OptionException("Le prix de l'option ne peut pas être négatif");
+    else
+        prix = prix -50;
 
     return (*this);
 }

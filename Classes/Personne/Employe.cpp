@@ -64,7 +64,7 @@ void Employe :: setMotDePasse(string mdp)
 void Employe :: ResetMotDePasse()
 {
     if(motDePasse!= NULL)
-        delete[] motDePasse;
+        delete motDePasse;
     
     motDePasse = NULL;
 

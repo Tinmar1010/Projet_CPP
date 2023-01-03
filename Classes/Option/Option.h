@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "OptionException.h"
+
 using namespace std;
 
 class Option

@@ -687,7 +687,7 @@ void ApplicGarageWindow::closeEvent(QCloseEvent *event)
 void ApplicGarageWindow::on_actionNouveau_modele_triggered()
 {
     // Saisie des informations (aucune vérification n'est faite --> à gérer si vous voulez)
-
+    
     string nomModele = dialogueDemandeTexte("Nouveau modèle", "Nom :");
     int puissance = dialogueDemandeInt("Nouveau modèle", "Puissance :");
     int moteur = dialogueDemandeInt("Nouveau modèle :", "Moteur (0=essence,1=diesel,2=électrique,3=hybride) :");
@@ -728,33 +728,113 @@ void ApplicGarageWindow::on_actionNouveau_modele_triggered()
 void ApplicGarageWindow::on_actionNouvelle_option_triggered()
 {
     // Saisie des informations (aucune vérification n'est faite --> à gérer si vous voulez)
+    
     string code = dialogueDemandeTexte("Nouvelle option", "Code :");
     string intitule = dialogueDemandeTexte("Nouvelle option", "Intitule :");
     float prix = dialogueDemandeFloat("Nouvelle option", "Prix :");
 
-    // TO DO (étape 9)
-    // /!\ try catch pour qu elees valeurs encodées soit correcte OptionException
+    try
+    {
+        Garage ::getInstance().ajouteOption(Option(code, intitule, prix));
+        ajouteOptionDisponible(intitule, prix);
+    }
+    catch(OptionException o)
+    {
+        cout<<"Erreur : "<< o.getMessage()<<endl;
+        
+        dialogueErreur("OptionException",o.getMessage().c_str());
+    }
+    
+    
 
-    Garage ::getInstance().ajouteOption(Option(code, intitule, prix));
-    ajouteOptionDisponible(intitule, prix);
+    // TO DO (étape 9)
+    // /!\ try catch pour qu elees valeurs encodées soit correcte OptionException-> OK
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionAjouterEmploye_triggered()
 {
     // TO DO (étape 11)
+    string nom = dialogueDemandeTexte("Nouvel employé(e)", "Nom : ");
+    string prenom = dialogueDemandeTexte("Nouvel employé(e)", "Prenom : ");
+    string login = dialogueDemandeTexte("Nouvel employé(e)", "Login : ");
+    string fonction = dialogueDemandeTexte("Nouvel employé(e)", "Fonction :");
+
+    if ((nom == "" || prenom == "" || login == "") && (fonction != "Vendeur" || fonction != "Administratif"))
+        dialogueErreur("Nouvel employé(e)", "Problème d'encodage");
+    
+    else 
+    {
+        Garage :: getInstance().ajouteEmploye(nom, prenom, login, fonction);
+
+        
+        videTableEmployes();
+        Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
+        Iterateur<Employe> ite(tmp);
+        ite.reset();
+        
+        int i = 0;
+
+        while (!ite.end())
+        {
+            ajouteTupleTableEmployes(tmp[i].Tuple());
+            i++;
+            ite++;
+        }
+
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionSupprimerEmploye_par_numero_triggered()
 {
     // TO DO (étape 11)
+    int i = dialogueDemandeInt("Employé", "Numéro : ");
+    
+    Garage :: getInstance().supprimeEmployeParNumero(i);
+    
+    videTableEmployes();
+    Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
+    Iterateur<Employe> ite(tmp);
+    ite.reset();
+    
+    int j = 0;
+
+    while (!ite.end())
+    {
+        ajouteTupleTableEmployes(tmp[j].Tuple());
+        j++;
+        ite++;
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionSupprimerEmploye_selection_triggered()
 {
     // TO DO (étape 11)
+    int j = getIndiceEmployeSelectionne();
+
+    if (j==-1)
+        dialogueErreur("Erreur", "Pas d'employé selectionné");
+    else
+    {
+        Garage::getInstance().supprimeEmployeParIndice(j);
+    
+        videTableEmployes();
+        Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
+        Iterateur<Employe> ite(tmp);
+        ite.reset();
+        
+        int j = 0;
+
+        while (!ite.end())
+        {
+            ajouteTupleTableEmployes(tmp[j].Tuple());
+            j++;
+            ite++;
+        }
+    }   
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -779,18 +859,86 @@ void ApplicGarageWindow::on_actionSupprimerClient_selection_triggered()
 void ApplicGarageWindow::on_actionLogin_triggered()
 {
     // TO DO (étape 11)
+    string mdp;
+    string login = dialogueDemandeTexte("Nouvel employé(e)", "Login : ");
+
+    Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
+    Iterateur<Employe> ite(tmp);
+    ite.reset();
+        
+    int j = 0;
+
+    while (!ite.end() && tmp[j].getLogin() != login)
+    {
+        j++;
+        ite++;
+    }
+
+    if(ite.end())
+        dialogueErreur("Erreur", "Login introuvable");
+    else
+    {
+
+        mdp = dialogueDemandeTexte("Login", "Entrez un mot de passe : ");
+        Garage::getInstance().pE = &tmp[j];
+        try
+        {
+            mdp = Garage :: getInstance().pE->getMotDePasse();
+        }
+        catch (PasswordException p)
+        {
+            try
+            {
+                Garage :: getInstance().pE->setMotDePasse(mdp);    
+            }
+            catch (PasswordException o)
+            {
+                dialogueErreur("Login", o.getMessage().c_str());
+                return;
+            }
+            
+        }
+        
+        
+        if (mdp == Garage::getInstance().pE->getMotDePasse())
+        {
+            if(Garage::getInstance().pE->getFonction() == "Vendeur")
+            {
+                setRole(2);
+                setTitre(Garage::getInstance().pE->getFonction());
+            }
+            else if(Garage::getInstance().pE->getFonction() == "Administratif")
+            {
+                setRole(1);
+                setTitre(Garage::getInstance().pE->getFonction());
+            }
+        }
+        else
+        {
+            dialogueErreur("Login", "Mauvais Mot de passe !");
+        }
+    }
+        
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionLogout_triggered()
 {
     // TO DO (étape 11)
+    setTitre("");
+    setRole(0);
+    Garage ::getInstance().pE = NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionReset_Mot_de_passe_triggered()
 {
+    // TODO : Bug : invalid address
     // TO DO (étape 11)
+    Garage :: getInstance().pE->ResetMotDePasse();
+    
+    dialogueMessage("Employe", "Reset du message");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -886,10 +1034,22 @@ void ApplicGarageWindow::on_pushButtonReduction_clicked()
         v = Garage ::getProjetEnCours();
         o = v[ind];
         Garage ::getProjetEnCours().RetireOption(o->getCode());
+        cout <<"Je suis apres le retireOption"<<endl;
         o1 = *o;
-        o1--;
-        Garage ::getProjetEnCours().AjouteOption(o1);
-        setPrix(Garage ::getProjetEnCours().getPrix());
+        try
+        {
+            o1--;
+            Garage ::getProjetEnCours().AjouteOption(o1);
+            cout << "Je suis apres le ajouteOption" << endl;
+            setPrix(Garage ::getProjetEnCours().getPrix());
+
+        }
+        catch (OptionException o)
+        {
+            dialogueErreur("Option", o.getMessage().c_str());
+        }
+        
+
     }
 }
 
@@ -924,8 +1084,8 @@ void ApplicGarageWindow::on_pushButtonOuvrirProjet_clicked()
 		setTableOption(i, opt->getCode(), opt->getIntitule(), opt->getPrix());
 		i++;
 	}
-
-    // Option
+    setPrix(Garage :: getProjetEnCours().getPrix());
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

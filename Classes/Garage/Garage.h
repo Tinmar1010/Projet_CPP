@@ -70,6 +70,9 @@ class Garage
 
         Vecteur <Modele> getModeles();
         Vecteur <Option> getOptions();
+        Vecteur <Employe> getEmployes();
+
+        static Employe* pE;
 };
 
 #endif

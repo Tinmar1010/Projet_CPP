@@ -59,3 +59,4 @@ template class Vecteur <Voiture>;
 #include "Option.h"
 template class Iterateur <Option>;
 template class Iterateur<Modele>;
+template class Iterateur<Employe>;
