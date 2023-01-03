@@ -56,3 +56,6 @@ template class Vecteur <Modele>;
 template class Vecteur <Option>;
 #include "Voiture.h"
 template class Vecteur <Voiture>;
+#include "Option.h"
+template class Iterateur <Option>;
+template class Iterateur<Modele>;

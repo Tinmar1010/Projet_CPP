@@ -1,123 +1,101 @@
 #include "Vecteur.h"
 
-
-template <class T>
-Vecteur <T>::Vecteur()
+template <class T> Vecteur<T>::Vecteur(void)
 {
-    _sizemax = 20;
+    _sizeMax = 10;
     _size = 0;
-    v = new T[_sizemax];
 
-    T temp;
-    for(int i=0;i<_size;i++)
-        v[i] = temp;
-
-    
+    v = new T[10];
 }
-template <class T>
-Vecteur <T>::Vecteur(const int n)
+
+template <class T> Vecteur<T>::Vecteur(const int size)
 {
-    _sizemax = n;
+    _sizeMax = size;
     _size = 0;
-    v = new T[_sizemax];
 
-    T temp;
-    for(int i=0;i<_size;i++)
-        v[i] = temp;
-}
-template <class T>
-Vecteur <T> :: Vecteur(const Vecteur& t)
-{
-    _size = t._size;
-    _sizemax = t._sizemax;
-    int i = 0;
-    v = new T[t._sizemax];
-    while(i<_size)
-    {
-        v[i] = t.v[i];
-        i++;
-    }
-    
-}
-template <class T>
-Vecteur <T>::~Vecteur()
-{
-    if(v!=NULL)
-        delete [] v;
-    
+    v = new T[size];
 }
 
-template <class T>
-int Vecteur <T>::size()
+template <class T> Vecteur<T>::Vecteur(const Vecteur &vec)
+{
+    _sizeMax = vec.sizeMax();
+    _size = vec.size();
+
+    v = new T[_sizeMax];
+
+    for(int i = 0; i < _size; i++)
+        v[i] = vec[i];
+}
+
+template <class T> Vecteur<T>::~Vecteur(void)
+{
+    delete []v;
+}
+
+template <class T> int Vecteur<T>::size() const
 {
     return _size;
 }
 
-template <class T>
-int Vecteur <T>::sizeMax()
+template <class T> int Vecteur<T>::sizeMax() const
 {
-    return _sizemax;
+    return _sizeMax;
 }
 
-template <class T>
-void Vecteur <T>::Affiche()
+template <class T> void Vecteur<T>::Affiche() const
 {
-    int i = 0;
-    while (i<_size)
-    {
-        cout<<' '<<v[i]<<' ';  
-        i++;
-    }
+    for (int i = 0; i < _size; i++)
+        cout << v[i] <<endl;
 }
 
-template <class T>
-void Vecteur <T>::insere(const T& t)
+template <class T> void Vecteur<T>::insere(const T& src)
 {
-    int i = 0;
-    i = _size;
-    _size = _size + 1;
-    v[i] = t;
+    if (_size < _sizeMax)
+        *(v+_size) = src;
+    _size++;
+
 }
-template <class T>
-T Vecteur <T> :: retire(int i)
+
+template <class T> T Vecteur<T>::retire(const int index)
 {
-    T temp;
-    temp = v[i];
-
-    for(int j = i;j<_size;j++)
-        v[j] = v[j+1];
-
-    _size = _size - 1;   
+    T tmp;
+    if (index >= 0 && index < _sizeMax - 1)
+        tmp = *(v + index);
+    // Potentiellement debordement de tableau !
+    for (int i = index; i < _sizeMax - 1; i++)
+        *(v + i) = *(v + i + 1);
     
-    return temp;
-}
-template <class T>
-Vecteur <T> & Vecteur<T>::operator=(const Vecteur&t)
-{
-    _sizemax = t._sizemax;
-    _size = t._size;
-    for (unsigned int i = 0;i<_size;i++)
-    {
-        v[i] = t.v[i];
-    }
+    _size--;
+    return tmp;
 
-    return(*this);
+
 }
-template <class T>
-T& Vecteur<T>:: operator[](int i)
+
+template <class T> Vecteur<T> & Vecteur<T>::operator=(const Vecteur & vec)
+{
+    _size = vec._size;
+    _sizeMax = vec._sizeMax;
+    if (v != NULL)
+        delete [] v ;
+    v = new T[vec._sizeMax];
+
+    for (int i = 0; i < vec._size; i++)
+        *(v + i) = *(vec.v + i);
+    
+    return (*this);
+    
+
+}
+
+template <class T> T& Vecteur<T>::operator[](int i) const
 {
     return *(v + i);
 }
 
-template class Vecteur <int>;
-#include "Client.h"
-template class Vecteur <Client>;
-#include "Employe.h"
-template class Vecteur <Employe>;
-#include "Modele.h"
-template class Vecteur <Modele>;
-#include "Option.h"
-template class Vecteur <Option>;
-#include "Voiture.h"
-template class Vecteur <Voiture>;
+/** Instanciation des templates...*/
 
+template class Vecteur<int>;
+template class Vecteur<Client>;
+template class Vecteur<Employe>;
+template class Vecteur<Modele>;
+template class Vecteur<Option>;

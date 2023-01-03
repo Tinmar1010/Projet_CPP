@@ -66,6 +66,7 @@ void Voiture :: setModele(Modele m)
     modele.setPrixDeBase(m.getPrixDeBase());
     modele.setMoteur(m.getMoteur());
     modele.setNom(m.getNom());
+    modele.setImage(m.getImage());
 }
 /********************************Surchage Opérateur**********************************/
 Voiture& Voiture :: operator=(const Voiture& v)
@@ -199,12 +200,13 @@ void Voiture::RetireOption(string code)
 {
     unsigned long i = 0;
     
-    while (i < (sizeof(options)/sizeof(options[0])) && options[i] != NULL && options[i]->getCode() != code)
+    while (i < (sizeof(options)/sizeof(options[0]))) {
+        if (options[i] != NULL && options[i]->getCode() == code) {
+            delete options[i];
+            options[i] = NULL;
+        }
         i++;
-   
-    delete options[i];
-    options[i] = NULL;
-
+    }
 }
 
 float Voiture::getPrix()const

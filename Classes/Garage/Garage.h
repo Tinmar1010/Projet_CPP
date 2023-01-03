@@ -67,6 +67,9 @@ class Garage
 
         void importeModeles(string);
         void importeOptions(string);
+
+        Vecteur <Modele> getModeles();
+        Vecteur <Option> getOptions();
 };
 
 #endif

@@ -3,22 +3,25 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <sstream>
+#include <qdebug.h>
+
 using namespace std;
-
-
 
 #define REPERTOIRE_IMAGES "images/"
 
-ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::ApplicGarageWindow)
+ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::ApplicGarageWindow)
 {
     ui->setupUi(this);
 
     // Configuration de la table des options (projet en cours)
     ui->tableWidgetOptions->setColumnCount(3);
     ui->tableWidgetOptions->setRowCount(5);
-    for (int i=0 ; i<5 ; i++) ui->tableWidgetOptions->setRowHeight(i,10);
+    for (int i = 0; i < 5; i++)
+        ui->tableWidgetOptions->setRowHeight(i, 10);
     QStringList labelsTableOptions;
-    labelsTableOptions << "Code" << "Prix" << "Intitulé";
+    labelsTableOptions << "Code"
+                       << "Prix"
+                       << "Intitulé";
     ui->tableWidgetOptions->setHorizontalHeaderLabels(labelsTableOptions);
     ui->tableWidgetOptions->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidgetOptions->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -32,7 +35,10 @@ ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent),ui
     ui->tableWidgetEmployes->setColumnCount(4);
     ui->tableWidgetEmployes->setRowCount(0);
     QStringList labelsTableEmployes;
-    labelsTableEmployes << "Numéro" << "Nom" << "Prénom" << "Fonction";
+    labelsTableEmployes << "Numéro"
+                        << "Nom"
+                        << "Prénom"
+                        << "Fonction";
     ui->tableWidgetEmployes->setHorizontalHeaderLabels(labelsTableEmployes);
     ui->tableWidgetEmployes->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidgetEmployes->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -46,7 +52,10 @@ ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent),ui
     ui->tableWidgetClients->setColumnCount(4);
     ui->tableWidgetClients->setRowCount(0);
     QStringList labelsTableClients;
-    labelsTableClients << "Numéro" << "Nom" << "Prénom" << "GSM";
+    labelsTableClients << "Numéro"
+                       << "Nom"
+                       << "Prénom"
+                       << "GSM";
     ui->tableWidgetClients->setHorizontalHeaderLabels(labelsTableClients);
     ui->tableWidgetClients->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidgetClients->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -60,7 +69,10 @@ ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent),ui
     ui->tableWidgetContrats->setColumnCount(4);
     ui->tableWidgetContrats->setRowCount(0);
     QStringList labelsTableContrats;
-    labelsTableContrats << "Numéro" << "Vendeur" << "Client" << "Voiture";
+    labelsTableContrats << "Numéro"
+                        << "Vendeur"
+                        << "Client"
+                        << "Voiture";
     ui->tableWidgetContrats->setHorizontalHeaderLabels(labelsTableContrats);
     ui->tableWidgetContrats->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidgetContrats->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -72,22 +84,52 @@ ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent),ui
 
     // Importation des modeles (étape 10)
     // TO DO
-    Garage :: getInstance().importeModeles("Modeles.csv");
 
+    Garage ::getInstance().importeModeles("Modeles.csv");
+    Modele m;
+    int i = 0;
+
+    Vecteur<Modele> tmpm = Garage::getInstance().getModeles(); // Fix wtf
+    Iterateur<Modele> itm(tmpm);
+    itm.reset();
+
+    while (!itm.end())
+    {
+
+        m = Garage::getInstance().getModele(i); // Garage::getInstance().getModele(i);
+        ajouteModeleDisponible(m.getNom(), m.getPrixDeBase());
+        i++;
+        itm++;
+    }
     // Importation des options (étape 10)
     // TO DO
+    Garage ::getInstance().importeOptions("Options.csv");
+    Vecteur<Option> tmpo = Garage::getInstance().getOptions();
+
+    Iterateur<Option> ito(tmpo);
+
+    ito.reset();
+    Option o;
+    i = 0;
+    while (!ito.end())
+    {
+        o = Garage::getInstance().getOption(i);
+        ajouteOptionDisponible(o.getIntitule(), o.getPrix());
+        i++;
+        ito++;
+    }
 
     // Ouverture (et/ou creation) du fichier Garage.data (étape 12)
     // TO DO
 
-    setRole();  // acces a tout pour l'instant
+    setRole(); // acces a tout pour l'instant
 
     //******* EXEMPLES (A SUPPRIMER) *******************************************
-     
-    //setTableOption(1,"XY08","Toit ouvrant",850.0);
-    ajouteOptionDisponible("Peinture metallisee",450.0);
-    ajouteOptionDisponible("Systeme GPS",1100.0);
-    //setModele("Peugeot 308",120,1,22300.0,"308.jpg"); */
+
+    // setTableOption(1,"XY08","Toit ouvrant",850.0);
+    ajouteOptionDisponible("Peinture metallisee", 450.0);
+    ajouteOptionDisponible("Systeme GPS", 1100.0);
+    // setModele("Peugeot 308",120,1,22300.0,"308.jpg"); */
     ajouteTupleTableEmployes("2;Wagner;Jean-Marc;Vendeur");
     ajouteTupleTableClients("8;Leonard;Anne;0475/47.25.36");
     ajouteTupleTableContrats("3;Wagner Jean-Marc;Quettier Patrick;508_ProjetQuettier");
@@ -204,40 +246,41 @@ void ApplicGarageWindow::setRole(int val)
         ui->pushButtonNouveauContrat->setEnabled(true);
         ui->pushButtonSupprimerContrat->setEnabled(true);
     }
-
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Table des options du projet en cours (ne pas modifier) /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ApplicGarageWindow::setTableOption(int indice,string code,string intitule,float prix)
+void ApplicGarageWindow::setTableOption(int indice, string code, string intitule, float prix)
 {
     // Modifie l'option de la ligne correspondant à l'indice fourni dans la table des options de l'interface graphique
     QTableWidgetItem *item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setTextAlignment(Qt::AlignCenter);
     item->setText(code.c_str());
-    ui->tableWidgetOptions->setItem(indice,0,item);
+    ui->tableWidgetOptions->setItem(indice, 0, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setTextAlignment(Qt::AlignCenter);
     char tmp[20];
-    sprintf(tmp,"%.2f",prix);
-    if (prix < 0.0) item->setText("");
-    else item->setText(tmp);
-    ui->tableWidgetOptions->setItem(indice,1,item);
+    sprintf(tmp, "%.2f", prix);
+    if (prix < 0.0)
+        item->setText("");
+    else
+        item->setText(tmp);
+    ui->tableWidgetOptions->setItem(indice, 1, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(intitule.c_str());
-    ui->tableWidgetOptions->setItem(indice,2,item);
+    ui->tableWidgetOptions->setItem(indice, 2, item);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::videTableOption()
 {
-    for (int i=0 ; i<5 ; i++) 
-      setTableOption(i);
+    for (int i = 0; i < 5; i++)
+        setTableOption(i);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,7 +288,8 @@ int ApplicGarageWindow::getIndiceOptionSelectionneeTable() const
 {
     // retourne l'indice de l'option selectionnee dans la table des options
     QModelIndexList liste = ui->tableWidgetOptions->selectionModel()->selectedRows();
-    if (liste.size() == 0) return -1;
+    if (liste.size() == 0)
+        return -1;
     QModelIndex index = liste.at(0);
     int indice = index.row();
     return indice;
@@ -254,12 +298,12 @@ int ApplicGarageWindow::getIndiceOptionSelectionneeTable() const
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Combobox des modèles disponibles (ne pas modifier) /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ApplicGarageWindow::ajouteModeleDisponible(const char* nom,float prixDeBase)
+void ApplicGarageWindow::ajouteModeleDisponible(const char *nom, float prixDeBase)
 {
     // ajoute un modèle dans le combobox correspondant (juste le nom et le prix)
     stringstream ss;
     char temp[20];
-    sprintf(temp,"%.2f",prixDeBase);
+    sprintf(temp, "%.2f", prixDeBase);
     ss << nom << " (" << temp << ")";
     ui->comboBoxModelesDisponibles->addItem(ss.str().c_str());
 }
@@ -280,12 +324,12 @@ int ApplicGarageWindow::getIndiceModeleSelectionneCombobox() const
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Combox des options disponibles (ne pas modifier) ///////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ApplicGarageWindow::ajouteOptionDisponible(string intitule,float prix)
+void ApplicGarageWindow::ajouteOptionDisponible(string intitule, float prix)
 {
     // ajoute une option dans le combobox correspondant
     stringstream ss;
     char temp[20];
-    sprintf(temp,"%.2f",prix);
+    sprintf(temp, "%.2f", prix);
     ss << intitule << " (" << temp << ")";
     ui->comboBoxOptionsDisponibles->addItem(ss.str().c_str());
 }
@@ -319,14 +363,14 @@ string ApplicGarageWindow::getNomProjetEnCours() const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ApplicGarageWindow::setModele(string nom,int puissance,int moteur,float prixDeBase,string imageModele)
+void ApplicGarageWindow::setModele(string nom, int puissance, int moteur, float prixDeBase, string imageModele)
 {
     // Remplit les champs correspondants dans l'interface graphique
     // pour le moteur (int) : 0=Essence, 1=Diesel, 2=Electrique, 3=Hybride
     ui->lineEditNomModele->setText(nom.c_str());
     ui->lineEditPuissance->setText(to_string(puissance).c_str());
     char tmp[20];
-    sprintf(tmp,"%.2f",prixDeBase);
+    sprintf(tmp, "%.2f", prixDeBase);
     ui->lineEditPrixDeBase->setText(tmp);
 
     ui->radioButtonEssence->setChecked(false);
@@ -334,14 +378,18 @@ void ApplicGarageWindow::setModele(string nom,int puissance,int moteur,float pri
     ui->radioButtonElectrique->setChecked(false);
     ui->radioButtonHybride->setChecked(false);
 
-    if (moteur == 0) ui->radioButtonEssence->setChecked(true);
-    if (moteur == 1) ui->radioButtonDiesel->setChecked(true);
-    if (moteur == 2) ui->radioButtonElectrique->setChecked(true);
-    if (moteur == 3) ui->radioButtonHybride->setChecked(true);
+    if (moteur == 0)
+        ui->radioButtonEssence->setChecked(true);
+    if (moteur == 1)
+        ui->radioButtonDiesel->setChecked(true);
+    if (moteur == 2)
+        ui->radioButtonElectrique->setChecked(true);
+    if (moteur == 3)
+        ui->radioButtonHybride->setChecked(true);
 
     // Met à jour l'image du modèle
     string cheminComplet = REPERTOIRE_IMAGES + imageModele;
-    QLabel* label = new QLabel();
+    QLabel *label = new QLabel();
     label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     label->setScaledContents(true);
     QPixmap *pixmap_img = new QPixmap(cheminComplet.c_str());
@@ -353,9 +401,9 @@ void ApplicGarageWindow::setModele(string nom,int puissance,int moteur,float pri
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::setPrix(float prix)
 {
-  char tmp[20];
-  sprintf(tmp,"%.2f",prix);
-  ui->lineEditPrix->setText(tmp);
+    char tmp[20];
+    sprintf(tmp, "%.2f", prix);
+    ui->lineEditPrix->setText(tmp);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,51 +413,55 @@ void ApplicGarageWindow::ajouteTupleTableEmployes(string tuple)
 {
     // Controle du tuple recu et parsing
     char Tuple[200];
-    strncpy(Tuple,tuple.c_str(),199);
-    char* tmp;
+    strncpy(Tuple, tuple.c_str(), 199);
+    char *tmp;
 
-    if ((tmp = strtok(Tuple,";")) == NULL) return;
+    if ((tmp = strtok(Tuple, ";")) == NULL)
+        return;
     char numero[20];
-    strcpy(numero,tmp);
+    strcpy(numero, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char nom[40];
-    strcpy(nom,tmp);
+    strcpy(nom, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char prenom[40];
-    strcpy(prenom,tmp);
+    strcpy(prenom, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char fonction[40];
-    strcpy(fonction,tmp);
+    strcpy(fonction, tmp);
 
     // Ajout possible
     int nbLignes = ui->tableWidgetEmployes->rowCount();
     nbLignes++;
     ui->tableWidgetEmployes->setRowCount(nbLignes);
-    ui->tableWidgetEmployes->setRowHeight(nbLignes-1,10);
+    ui->tableWidgetEmployes->setRowHeight(nbLignes - 1, 10);
 
     QTableWidgetItem *item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setTextAlignment(Qt::AlignCenter);
     item->setText(numero);
-    ui->tableWidgetEmployes->setItem(nbLignes-1,0,item);
+    ui->tableWidgetEmployes->setItem(nbLignes - 1, 0, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(nom);
-    ui->tableWidgetEmployes->setItem(nbLignes-1,1,item);
+    ui->tableWidgetEmployes->setItem(nbLignes - 1, 1, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(prenom);
-    ui->tableWidgetEmployes->setItem(nbLignes-1,2,item);
+    ui->tableWidgetEmployes->setItem(nbLignes - 1, 2, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(fonction);
-    ui->tableWidgetEmployes->setItem(nbLignes-1,3,item);
+    ui->tableWidgetEmployes->setItem(nbLignes - 1, 3, item);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -422,7 +474,8 @@ void ApplicGarageWindow::videTableEmployes()
 int ApplicGarageWindow::getIndiceEmployeSelectionne()
 {
     QModelIndexList liste = ui->tableWidgetEmployes->selectionModel()->selectedRows();
-    if (liste.size() == 0) return -1;
+    if (liste.size() == 0)
+        return -1;
     QModelIndex index = liste.at(0);
     int indice = index.row();
     return indice;
@@ -435,51 +488,55 @@ void ApplicGarageWindow::ajouteTupleTableClients(string tuple)
 {
     // Controle du tuple recu et parsing
     char Tuple[200];
-    strncpy(Tuple,tuple.c_str(),199);
-    char* tmp;
+    strncpy(Tuple, tuple.c_str(), 199);
+    char *tmp;
 
-    if ((tmp = strtok(Tuple,";")) == NULL) return;
+    if ((tmp = strtok(Tuple, ";")) == NULL)
+        return;
     char numero[20];
-    strcpy(numero,tmp);
+    strcpy(numero, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char nom[40];
-    strcpy(nom,tmp);
+    strcpy(nom, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char prenom[40];
-    strcpy(prenom,tmp);
+    strcpy(prenom, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char gsm[40];
-    strcpy(gsm,tmp);
+    strcpy(gsm, tmp);
 
     // Ajout possible
     int nbLignes = ui->tableWidgetClients->rowCount();
     nbLignes++;
     ui->tableWidgetClients->setRowCount(nbLignes);
-    ui->tableWidgetClients->setRowHeight(nbLignes-1,10);
+    ui->tableWidgetClients->setRowHeight(nbLignes - 1, 10);
 
     QTableWidgetItem *item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setTextAlignment(Qt::AlignCenter);
     item->setText(numero);
-    ui->tableWidgetClients->setItem(nbLignes-1,0,item);
+    ui->tableWidgetClients->setItem(nbLignes - 1, 0, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(nom);
-    ui->tableWidgetClients->setItem(nbLignes-1,1,item);
+    ui->tableWidgetClients->setItem(nbLignes - 1, 1, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(prenom);
-    ui->tableWidgetClients->setItem(nbLignes-1,2,item);
+    ui->tableWidgetClients->setItem(nbLignes - 1, 2, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(gsm);
-    ui->tableWidgetClients->setItem(nbLignes-1,3,item);
+    ui->tableWidgetClients->setItem(nbLignes - 1, 3, item);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -492,7 +549,8 @@ void ApplicGarageWindow::videTableClients()
 int ApplicGarageWindow::getIndiceClientSelectionne()
 {
     QModelIndexList liste = ui->tableWidgetClients->selectionModel()->selectedRows();
-    if (liste.size() == 0) return -1;
+    if (liste.size() == 0)
+        return -1;
     QModelIndex index = liste.at(0);
     int indice = index.row();
     return indice;
@@ -505,51 +563,55 @@ void ApplicGarageWindow::ajouteTupleTableContrats(string tuple)
 {
     // Controle du tuple recu et parsing
     char Tuple[200];
-    strncpy(Tuple,tuple.c_str(),199);
-    char* tmp;
+    strncpy(Tuple, tuple.c_str(), 199);
+    char *tmp;
 
-    if ((tmp = strtok(Tuple,";")) == NULL) return;
+    if ((tmp = strtok(Tuple, ";")) == NULL)
+        return;
     char numero[20];
-    strcpy(numero,tmp);
+    strcpy(numero, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char vendeur[40];
-    strcpy(vendeur,tmp);
+    strcpy(vendeur, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char client[40];
-    strcpy(client,tmp);
+    strcpy(client, tmp);
 
-    if ((tmp = strtok(NULL,";")) == NULL) return;
+    if ((tmp = strtok(NULL, ";")) == NULL)
+        return;
     char voiture[40];
-    strcpy(voiture,tmp);
+    strcpy(voiture, tmp);
 
     // Ajout possible
     int nbLignes = ui->tableWidgetContrats->rowCount();
     nbLignes++;
     ui->tableWidgetContrats->setRowCount(nbLignes);
-    ui->tableWidgetContrats->setRowHeight(nbLignes-1,10);
+    ui->tableWidgetContrats->setRowHeight(nbLignes - 1, 10);
 
     QTableWidgetItem *item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setTextAlignment(Qt::AlignCenter);
     item->setText(numero);
-    ui->tableWidgetContrats->setItem(nbLignes-1,0,item);
+    ui->tableWidgetContrats->setItem(nbLignes - 1, 0, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(vendeur);
-    ui->tableWidgetContrats->setItem(nbLignes-1,1,item);
+    ui->tableWidgetContrats->setItem(nbLignes - 1, 1, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(client);
-    ui->tableWidgetContrats->setItem(nbLignes-1,2,item);
+    ui->tableWidgetContrats->setItem(nbLignes - 1, 2, item);
 
     item = new QTableWidgetItem;
-    item->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     item->setText(voiture);
-    ui->tableWidgetContrats->setItem(nbLignes-1,3,item);
+    ui->tableWidgetContrats->setItem(nbLignes - 1, 3, item);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -562,7 +624,8 @@ void ApplicGarageWindow::videTableContrats()
 int ApplicGarageWindow::getIndiceContratSelectionne()
 {
     QModelIndexList liste = ui->tableWidgetContrats->selectionModel()->selectedRows();
-    if (liste.size() == 0) return -1;
+    if (liste.size() == 0)
+        return -1;
     QModelIndex index = liste.at(0);
     int indice = index.row();
     return indice;
@@ -571,34 +634,34 @@ int ApplicGarageWindow::getIndiceContratSelectionne()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Fonctions permettant d'afficher des boites de dialogue /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ApplicGarageWindow::dialogueMessage(const char* titre,const char* message)
+void ApplicGarageWindow::dialogueMessage(const char *titre, const char *message)
 {
-   QMessageBox::information(this,titre,message);
+    QMessageBox::information(this, titre, message);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ApplicGarageWindow::dialogueErreur(const char* titre,const char* message)
+void ApplicGarageWindow::dialogueErreur(const char *titre, const char *message)
 {
-   QMessageBox::critical(this,titre,message);
+    QMessageBox::critical(this, titre, message);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-string ApplicGarageWindow::dialogueDemandeTexte(const char* titre,const char* question)
+string ApplicGarageWindow::dialogueDemandeTexte(const char *titre, const char *question)
 {
-    QString chaine = QInputDialog::getText(this,titre,question);
+    QString chaine = QInputDialog::getText(this, titre, question);
     return chaine.toStdString();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int ApplicGarageWindow::dialogueDemandeInt(const char* titre,const char* question)
+int ApplicGarageWindow::dialogueDemandeInt(const char *titre, const char *question)
 {
-    return QInputDialog::getInt(this,titre,question);
+    return QInputDialog::getInt(this, titre, question);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float ApplicGarageWindow::dialogueDemandeFloat(const char* titre,const char* question)
+float ApplicGarageWindow::dialogueDemandeFloat(const char *titre, const char *question)
 {
-    return QInputDialog::getDouble(this,titre,question);
+    return QInputDialog::getDouble(this, titre, question);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -606,143 +669,128 @@ float ApplicGarageWindow::dialogueDemandeFloat(const char* titre,const char* que
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionQuitter_triggered()
 {
-  // TO DO (étape 12)
+    // TO DO (étape 12)
 
-  QApplication::exit();
+    QApplication::exit();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::closeEvent(QCloseEvent *event)
 {
-  if (event == NULL) {}  // pour éviter le warning
-  // TO DO (étape 12)
-
+    if (event == NULL)
+    {
+    } // pour éviter le warning
+      // TO DO (étape 12)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionNouveau_modele_triggered()
 {
-  // Saisie des informations (aucune vérification n'est faite --> à gérer si vous voulez)
+    // Saisie des informations (aucune vérification n'est faite --> à gérer si vous voulez)
 
-  Garage :: getInstance().afficheModelesDisponibles();
-  string nomModele = dialogueDemandeTexte("Nouveau modèle","Nom :");
-  int puissance = dialogueDemandeInt("Nouveau modèle","Puissance :");
-  int moteur = dialogueDemandeInt("Nouveau modèle :","Moteur (0=essence,1=diesel,2=électrique,3=hybride) :");
-  float prixDeBase = dialogueDemandeFloat("Nouveau modèle","Prix de base :");
-  string image = dialogueDemandeTexte("Nouveau modèle","Nom du fichier de l'image :");
-  
-  char *buff;
-  int size;
-  size = nomModele.size() + 1;
-  buff = new char [size];
-  strcpy(buff, nomModele.c_str());
+    string nomModele = dialogueDemandeTexte("Nouveau modèle", "Nom :");
+    int puissance = dialogueDemandeInt("Nouveau modèle", "Puissance :");
+    int moteur = dialogueDemandeInt("Nouveau modèle :", "Moteur (0=essence,1=diesel,2=électrique,3=hybride) :");
+    float prixDeBase = dialogueDemandeFloat("Nouveau modèle", "Prix de base :");
+    string image = dialogueDemandeTexte("Nouveau modèle", "Nom du fichier de l'image :");
 
-  Moteur mot = Essence;
-  switch (moteur)
+    char *buff;
+    int size;
+    size = nomModele.size() + 1;
+    buff = new char[size];
+    strcpy(buff, nomModele.c_str());
+
+    Moteur mot = Essence;
+    switch (moteur)
     {
-    case 0 : 
+    case 0:
         mot = Essence;
         break;
-    
-    case 1 : 
+
+    case 1:
         mot = Diesel;
         break;
-    
-    case 2 : 
+
+    case 2:
         mot = Electrique;
         break;
 
-    case 3 : 
+    case 3:
         mot = Hybride;
         break;
-    
     }
-  Garage::getInstance().ajouteModele(Modele(buff,puissance,mot,prixDeBase, image));
-  
-  ajouteModeleDisponible(buff, prixDeBase);
+    Garage::getInstance().ajouteModele(Modele(buff, puissance, mot, prixDeBase, image));
 
+    ajouteModeleDisponible(buff, prixDeBase);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionNouvelle_option_triggered()
 {
-  // Saisie des informations (aucune vérification n'est faite --> à gérer si vous voulez)
-  string code = dialogueDemandeTexte("Nouvelle option","Code :");
-  string intitule = dialogueDemandeTexte("Nouvelle option","Intitule :");
-  float prix = dialogueDemandeFloat("Nouvelle option","Prix :");
+    // Saisie des informations (aucune vérification n'est faite --> à gérer si vous voulez)
+    string code = dialogueDemandeTexte("Nouvelle option", "Code :");
+    string intitule = dialogueDemandeTexte("Nouvelle option", "Intitule :");
+    float prix = dialogueDemandeFloat("Nouvelle option", "Prix :");
 
-  // TO DO (étape 9)
-  // /!\ try catch pour qu elees valeurs encodées soit correcte OptionException
+    // TO DO (étape 9)
+    // /!\ try catch pour qu elees valeurs encodées soit correcte OptionException
 
-  Garage :: getInstance().ajouteOption(Option(code, intitule, prix));
-  ajouteOptionDisponible(intitule, prix);
-
-
-
-
+    Garage ::getInstance().ajouteOption(Option(code, intitule, prix));
+    ajouteOptionDisponible(intitule, prix);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionAjouterEmploye_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionSupprimerEmploye_par_numero_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionSupprimerEmploye_selection_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionAjouterClient_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionSupprimerClient_par_numero_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionSupprimerClient_selection_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionLogin_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionLogout_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionReset_Mot_de_passe_triggered()
 {
-  // TO DO (étape 11)
-
+    // TO DO (étape 11)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -750,104 +798,111 @@ void ApplicGarageWindow::on_actionReset_Mot_de_passe_triggered()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonChoisirModele_clicked()
 {
-  // TO DO (étape 9)
-    Modele m ;
-    cout<<"Clic sur le bouton choisir modele "<<endl;
+    // TO DO (étape 9)
+    Modele m;
+    cout << "Clic sur le bouton choisir modele " << endl;
     int ind = getIndiceModeleSelectionneCombobox();
-    if(ind==-1)
+    if (ind == -1)
         dialogueErreur("Indice = -1", "Modele introuvable !");
     else
     {
-        Garage :: getProjetEnCours().setModele(Garage :: getInstance().getModele(ind));
-        m = Garage :: getInstance().getModele(ind);
-        setModele(m.getNom(), m.getPuissance(), m.getMoteur(), m.getPrixDeBase(), m.getImage());//ATTENTION : image pas fix
-        setPrix(Garage :: getProjetEnCours().getPrix());
+        Garage ::getProjetEnCours().setModele(Garage ::getInstance().getModele(ind));
+        m = Garage ::getInstance().getModele(ind);
+        setModele(m.getNom(), m.getPuissance(), m.getMoteur(), m.getPrixDeBase(), m.getImage()); // ATTENTION : image pas fix
+        setPrix(Garage ::getProjetEnCours().getPrix());
     }
-    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonAjouterOption_clicked()
 {
-  // TO DO (étape 9)
+    // TO DO (étape 9)
     Option o;
-    int i = 0;
-    cout<<"Clic sur le bouton ajouter option"<<endl;
+    cout << "Clic sur le bouton ajouter option" << endl;
 
     int ind = getIndiceOptionSelectionneeCombobox();
-    if(ind==-1)
+    if (ind == -1)
         dialogueErreur("Indice = -1", "Option introuvable ! ");
     else
     {
-        o = Garage :: getInstance().getOption(ind);
-        Garage :: getProjetEnCours().AjouteOption(o);
-        setTableOption(ind, o.getCode(), o.getIntitule(), o.getPrix());
-        setPrix(Garage :: getProjetEnCours().getPrix());
-    }
+        // Cherche la première case vide et insere la nouvelle option
+        int elem = 0;
 
+        while (ui->tableWidgetOptions->item(elem, 0)!= NULL && ui->tableWidgetOptions->item(elem, 0)->text() != "") {
+            elem++;
+            qDebug() << ui->comboBoxOptionsDisponibles->itemText(elem);
+        }
+        
+		
+        cout << "elem : " << elem << endl;
+        o = Garage ::getInstance().getOption(ind);
+        Garage ::getProjetEnCours().AjouteOption(o);
+        setTableOption(elem, o.getCode(), o.getIntitule(), o.getPrix());
+        setPrix(Garage ::getProjetEnCours().getPrix());
+        
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonSupprimerOption_clicked()
 {
-  // TO DO (étape 9)
+    // TO DO (étape 9)
     Option *o;
     Voiture v;
-    cout<<"Clic sur le bouton supprimer option"<<endl;
-    
-    int ind = getIndiceOptionSelectionneeTable();   
-    cout<<"Ind : "<<endl; 
-    if(ind==-1)
+    cout << "Clic sur le bouton supprimer option" << endl;
+
+    int ind = getIndiceOptionSelectionneeTable();
+	cout<<"ind : "<<ind<<endl;
+    if (ind == -1 || ui->tableWidgetOptions->item(ind, 0) == NULL ||  (ui->tableWidgetOptions->item(ind, 0) != NULL && ui->tableWidgetOptions->item(ind, 0)->text() == ""))
         dialogueErreur("Indice = -1", "Option introuvable ! ");
     else
     {
-        v = Garage :: getProjetEnCours();
+        v = Garage ::getProjetEnCours();
         o = v[ind];
-        Garage :: getProjetEnCours().RetireOption(o->getCode());
+        Garage ::getProjetEnCours().RetireOption(o->getCode());
+        Garage::getProjetEnCours().Affiche();
         setTableOption(ind, "", "", -1);
-        setPrix(Garage :: getProjetEnCours().getPrix());
+        setPrix(Garage ::getProjetEnCours().getPrix());
     }
 
-    //Si je en selectionne rien (pour voir si la boite de dialogue fonctionne) -> erreur de segmentation core dumped donc je suppose qu'il pense dans le else
-
+    // Si je en selectionne rien (pour voir si la boite de dialogue fonctionne) -> erreur de segmentation core dumped donc je suppose qu'il pense dans le else ->fix	
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonReduction_clicked()
 {
-  // TO DO (étape 9)
+    // TO DO (étape 9)
     Option *o;
     o = new Option[1];
     Option o1;
     Voiture v;
-    cout<<"Clic sur le bouton reduction"<<endl;
-    
-    int ind = getIndiceOptionSelectionneeTable();   
-    if(ind==-1)
+    cout << "Clic sur le bouton reduction" << endl;
+
+    int ind = getIndiceOptionSelectionneeTable();
+    if (ind == -1)
         dialogueErreur("Indice = -1", "Option introuvable ! ");
     else
     {
-        v = Garage :: getProjetEnCours();
+        v = Garage ::getProjetEnCours();
         o = v[ind];
-        Garage :: getProjetEnCours().RetireOption(o->getCode());
+        Garage ::getProjetEnCours().RetireOption(o->getCode());
         o1 = *o;
         o1--;
-        Garage :: getProjetEnCours().AjouteOption(o1);
-        setPrix(Garage :: getProjetEnCours().getPrix());
+        Garage ::getProjetEnCours().AjouteOption(o1);
+        setPrix(Garage ::getProjetEnCours().getPrix());
     }
-}   
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonEnregistrerProjet_clicked()
 {
-  // TO DO (étape 9)
+    // TO DO (étape 9)
 
     string nom = getNomProjetEnCours();
 
-    Garage :: getProjetEnCours().setNom(nom);
-    cout<<"Nom : "<<nom<<endl;
-    Garage :: getProjetEnCours().Save();
-        
+    Garage ::getProjetEnCours().setNom(nom);
+    cout << "Nom : " << nom << endl;
+    Garage ::getProjetEnCours().Save();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -855,23 +910,28 @@ void ApplicGarageWindow::on_pushButtonOuvrirProjet_clicked()
 {
     // TO DO (étape 9)
     Modele m;
-    Option o;
+    Option *opt;
     string nom = getNomProjetEnCours();
 
     string nf = nom + ".car";
-    Garage :: getProjetEnCours().Load(nf);
-    m = Garage :: getProjetEnCours().getModele();
-    setModele(m.getNom(), m.getPuissance(), m.getMoteur(), m.getPrixDeBase(), m.getImage());//ATTENTION : image pas fix
+    Garage ::getProjetEnCours().Load(nf);
+    m = Garage ::getProjetEnCours().getModele();
+    setModele(m.getNom(), m.getPuissance(), m.getMoteur(), m.getPrixDeBase(), m.getImage()); // ATTENTION : image s'affiche pas
 
-    //Option
-    
+	int i = 0;
+	while((opt = Garage :: getProjetEnCours()[i]) != NULL)
+    {
+		setTableOption(i, opt->getCode(), opt->getIntitule(), opt->getPrix());
+		i++;
+	}
 
+    // Option
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonNouveauProjet_clicked()
 {
-  // TO DO (étape 9)
+    // TO DO (étape 9)
     Garage ::resetProjetEnCours();
     setModele("", 0, 0, 0, "");
     videTableOption();
@@ -880,21 +940,17 @@ void ApplicGarageWindow::on_pushButtonNouveauProjet_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonNouveauContrat_clicked()
 {
-  // TO DO (étape 13)
-
+    // TO DO (étape 13)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonSupprimerContrat_clicked()
 {
-  // TO DO (étape 13)
-
+    // TO DO (étape 13)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonVisualiserVoiture_clicked()
 {
-  // TO DO (étape 13)
-
+    // TO DO (étape 13)
 }
-

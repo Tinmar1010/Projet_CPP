@@ -4,7 +4,8 @@ Garage Garage :: instance = Garage();
 Voiture Garage :: ProjetEnCours = Voiture();
 Garage :: Garage()
 {   
-    
+    modeles = Vecteur <Modele>(50);
+    options = Vecteur <Option>(50);
 }
 Garage :: ~Garage()
 {
@@ -24,8 +25,7 @@ void Garage :: resetProjetEnCours()
 }
 void Garage :: ajouteModele(const Modele & m)
 {
-    if(modeles.size()<modeles.sizeMax())
-        modeles.insere(m);
+    modeles.insere(m);
 }
 void Garage :: afficheModelesDisponibles()const
 {
@@ -38,11 +38,9 @@ void Garage :: afficheModelesDisponibles()const
 }
 Modele Garage :: getModele(int indice)
 {
-    Modele m;
-    m = modeles[indice];
-    
-    return m;
+    return modeles[indice];
 }
+
 
 void Garage :: ajouteOption(const Option & o)
 {
@@ -147,49 +145,73 @@ void Garage :: importeModeles(string nomfichier)
     char *champ;
     ifstream fichier(nomfichier, ios :: in);
     Modele m;
+    Moteur mot;
 
     if (fichier.is_open())
     {
-        while(fichier.getline(temp, sizeof(temp)-1))
-        {
+        fichier.getline(temp, sizeof(temp)-1); // Un premier getline pour supprimer le header du fichier .csv
+        
+        while(fichier.getline(temp, sizeof(temp)-1)){
+
             champ = strtok(temp, ";");
-            while(champ!=NULL)
-            {
-                cout<<champ<<endl;
-                champ++;
-                champ = strtok(NULL, ";");
-
-            }
             m.setNom(champ);
+            champ = strtok(NULL, ";");
             m.setPuissance(atoi(champ));
-            Moteur mot = Essence;
-            switch (atoi(champ))
-            {
-                case 0 : 
-                    mot = Essence;
-                    break;
+            champ = strtok(NULL, ";");
+            if(strcmp(champ, "essence") == 0)
+                mot = Essence;           
+            else if (strcmp(champ, "diesel") == 0)
+                mot = Diesel;
+            else if (strcmp(champ, "electrique") == 0)
+                mot = Electrique;
+            else if(strcmp(champ, "hybride") == 0)
+                mot = Hybride;
                 
-                case 1 : 
-                    mot = Diesel;
-                    break;
-                
-                case 2 : 
-                    mot = Electrique;
-                    break;
-
-                case 3 : 
-                    mot = Hybride;
-                    break;
-                
-            }
             m.setMoteur(mot);
+            champ = strtok(NULL, ";");
             m.setImage(champ);
+            champ = strtok(NULL, ";");
             m.setPrixDeBase(atof(champ));
             ajouteModele(m);
+            
         }
     }
+    
+
+
 }
 void Garage :: importeOptions(string nomfichier)
 {
+    char temp[128];
+    int i = 0;
+    char *champ;
+    ifstream fichier(nomfichier, ios :: in);
+    Option o;
 
+    if (fichier.is_open())
+    {
+        fichier.getline(temp, sizeof(temp)-1); // Un premier getline pour supprimer le header du fichier .csv
+        
+        while(fichier.getline(temp, sizeof(temp)-1)){
+
+            champ = strtok(temp, ";");
+            o.setCode(champ);
+            champ = strtok(NULL, ";");
+            o.setIntitule(champ);
+            champ = strtok(NULL, ";");
+            o.setPrix(atof(champ));
+            ajouteOption(o);
+        }
+    }
+    
+}
+
+Vecteur<Modele> Garage :: getModeles()
+{
+    return modeles;
+}
+
+Vecteur<Option> Garage :: getOptions()
+{
+    return options;
 }

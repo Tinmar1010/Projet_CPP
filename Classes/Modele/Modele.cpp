@@ -13,6 +13,7 @@ Modele::Modele()
     moteur = Essence;
 
     nom = new char [50];
+    image = "";
 }
 
 Modele:: Modele(const char *n, int p, Moteur m, float pr, string jpg)
@@ -107,6 +108,7 @@ Modele& Modele :: operator=(const Modele& m)
     setPrixDeBase(m.getPrixDeBase());
     setPuissance(m.getPuissance());
     setMoteur(m.getMoteur());
+    setImage(m.getImage());
 
     return (*this);
 }
@@ -214,6 +216,7 @@ void Modele :: Save(ofstream &fichier)const
         exit(1);
     }
 
+    int tailleimage = image.size();
     int taille = strlen(nom);
     fichier.write((char*)&taille, sizeof(int));
 
@@ -221,6 +224,8 @@ void Modele :: Save(ofstream &fichier)const
     fichier.write((char*)&prix, sizeof(float));
     fichier.write((char*)&moteur, sizeof(Moteur));
     fichier.write((char*)nom, taille*sizeof(char));
+    fichier.write((char*)&tailleimage, sizeof(int));
+    fichier.write((char*)image.data(), tailleimage*sizeof(char));
 
 
 }
@@ -231,7 +236,7 @@ void Modele :: Load(ifstream &fichier)
         cout<<"Erreur d'ouverture !"<<endl;
         exit(1);
     }
-
+    int tailleimage;
     int taille = 0;
     fichier.read((char*)&taille, sizeof(int));
     nom = new char[taille + 1];
@@ -241,6 +246,8 @@ void Modele :: Load(ifstream &fichier)
     fichier.read((char*)&moteur, sizeof(Moteur));
     fichier.read((char*)nom, taille*sizeof(char));
     nom[taille] = 0;
-
+    fichier.read((char*)&tailleimage, sizeof(int));
+    image.resize(tailleimage);
+    fichier.read((char*)image.data(), tailleimage*sizeof(char));
 
 }
