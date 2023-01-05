@@ -838,20 +838,23 @@ void ApplicGarageWindow::on_actionSupprimerEmploye_par_numero_triggered()
     // TO DO (étape 11)
     int i = dialogueDemandeInt("Employé", "Numéro : ");
     
-    Garage :: getInstance().supprimeEmployeParNumero(i);
-    
-    videTableEmployes();
-    Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
-    Iterateur<Employe> ite(tmp);
-    ite.reset();
-    
-    int j = 0;
-
-    while (!ite.end())
+    if (i > -1)
     {
-        ajouteTupleTableEmployes(tmp[j].Tuple());
-        j++;
-        ite++;
+        Garage :: getInstance().supprimeEmployeParNumero(i);
+        
+        videTableEmployes();
+        Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
+        Iterateur<Employe> ite(tmp);
+        ite.reset();
+        
+        int j = 0;
+
+        while (!ite.end())
+        {
+            ajouteTupleTableEmployes(tmp[j].Tuple());
+            j++;
+            ite++;
+        }
     }
 }
 
@@ -893,14 +896,14 @@ void ApplicGarageWindow::on_actionAjouterClient_triggered()
     string gsm = dialogueDemandeTexte("Nouvel employé(e)", "Gsm :");
 
     if ((nom == "" || prenom == "" || gsm == ""))
-        dialogueErreur("Nouvel employé(e)", "Problème d'encodage");
+        dialogueErreur("Nouveau client(e)", "Problème d'encodage");
     
     else 
     {
         Garage :: getInstance().ajouteClient(nom, prenom, gsm);
 
         
-        videTableEmployes();
+        videTableClients();
         Vecteur<Client> tmp = Garage::getInstance().getClients();
         Iterateur<Client> ite(tmp);
         ite.reset();
@@ -921,22 +924,25 @@ void ApplicGarageWindow::on_actionAjouterClient_triggered()
 void ApplicGarageWindow::on_actionSupprimerClient_par_numero_triggered()
 {
     // TO DO (étape 11)
-     int i = dialogueDemandeInt("Employé", "Numéro : ");
-    
-    Garage :: getInstance().supprimeClientParNumero(i);
-    
-    videTableClients();
-    Vecteur<Client> tmp = Garage::getInstance().getClients();
-    Iterateur<Client> ite(tmp);
-    ite.reset();
-    
-    int j = 0;
-
-    while (!ite.end())
+    int i = dialogueDemandeInt("Client", "Numéro : ");
+    if (i > -1)
     {
-        ajouteTupleTableClients(tmp[j].Tuple());
-        j++;
-        ite++;
+        Garage :: getInstance().supprimeClientParNumero(i);
+    
+        videTableClients();
+        Vecteur<Client> tmp = Garage::getInstance().getClients();
+        Iterateur<Client> ite(tmp);
+        ite.reset();
+        
+        int j = 0;
+
+        while (!ite.end())
+        {
+            ajouteTupleTableClients(tmp[j].Tuple());
+            j++;
+            ite++;
+        }
+
     }
 }
 
@@ -995,8 +1001,6 @@ void ApplicGarageWindow::on_actionLogin_triggered()
         mdp = dialogueDemandeTexte("Login", "Entrez un mot de passe : ");
         Garage::getInstance().pE = &tmp[j];
 
-        cout << Garage::getInstance().pE << endl;
-        cout << *Garage::getInstance().pE << endl;
         try
         {
             mdpTemp = Garage :: getInstance().pE->getMotDePasse();
@@ -1035,10 +1039,6 @@ void ApplicGarageWindow::on_actionLogin_triggered()
             dialogueErreur("Login", "Mauvais Mot de passe !");
         }
     }
-    
-    cout << Garage::getInstance().pE << endl;
-    cout << *Garage::getInstance().pE << endl;
-    cout << (*Garage::getInstance().pE).getMotDePasse() << endl;
     
 }
 
@@ -1131,8 +1131,6 @@ void ApplicGarageWindow::on_pushButtonSupprimerOption_clicked()
         setTableOption(ind, "", "", -1);
         setPrix(Garage ::getProjetEnCours().getPrix());
     }
-
-    // Si je en selectionne rien (pour voir si la boite de dialogue fonctionne) -> erreur de segmentation core dumped donc je suppose qu'il pense dans le else ->fix	
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -94,7 +94,11 @@ void Garage :: afficheClients()const
 }
 void Garage :: supprimeClientParIndice(int ind)
 {
-    clients.retire(ind);
+    if(ind < clients.size()&&Client :: numCourant>0)
+    {
+        clients.retire(ind);
+        Client :: numCourant = (Client :: numCourant - 1);
+    }
 }
 void Garage :: supprimeClientParNumero(int num)
 {
@@ -103,8 +107,14 @@ void Garage :: supprimeClientParNumero(int num)
     while(i<clients.size()&&clients[i].getNumero() != num)
         i++;
 
-    clients.retire(i);
-}
+    if(i < clients.size() && clients[i].getNumero() == num)
+    {
+        clients.retire(i);
+        if(Client :: numCourant>0)
+            Client :: numCourant = (Client :: numCourant - 1);
+    }
+}    
+
 
 void Garage :: ajouteEmploye(string nom,string prenom,string login,string fonction)
 {
@@ -132,7 +142,13 @@ void Garage :: afficheEmployes()const
 }
 void Garage :: supprimeEmployeParIndice(int ind)
 {
-    employes.retire(ind);
+    if (ind < employes.size())
+    {
+        if(Employe :: numCourant>0){
+            employes.retire(ind);
+            Employe :: numCourant = (Employe :: numCourant - 1);
+        }
+    }
 }
 void Garage :: supprimeEmployeParNumero(int num)
 {
@@ -141,7 +157,12 @@ void Garage :: supprimeEmployeParNumero(int num)
     while(i<employes.size()&&employes[i].getNumero() != num)
         i++;
 
-    employes.retire(i);
+    if (i < employes.size() && employes[i].getNumero() == num)
+    {
+        employes.retire(i);
+        if(Employe :: numCourant>0)
+            Employe :: numCourant = (Employe :: numCourant - 1);
+    }
 }
 void Garage :: importeModeles(string nomfichier)
 {
