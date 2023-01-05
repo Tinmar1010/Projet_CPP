@@ -2,6 +2,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -15,7 +16,63 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "-c",
+      "-g",
+      "-pipe",
+      "-O2",
+      "-std=gnu++11",
+      "-Wall",
+      "-W",
+      "-D_REENTRANT",
+      "-fPIC",
+      "-DQT_DEPRECATED_WARNINGS",
+      "-DQT_NO_DEBUG",
+      "-DQT_WIDGETS_LIB",
+      "-DQT_GUI_LIB",
+      "-DQT_CORE_LIB",
+      "-I.",
+      "-isystem",
+      "/usr/include/qt5",
+      "-isystem",
+      "/usr/include/qt5/QtWidgets",
+      "-isystem",
+      "/usr/include/qt5/QtGui",
+      "-isystem",
+      "/usr/include/qt5/QtCore",
+      "-I.",
+      "-I.",
+      "-I/usr/lib64/qt5/mkspecs/linux-g++",
+      "-o",
+      "main.o",
+      "main.cpp"
+    ],
+    "directory": "/home/liwinux/Desktop/Projet_CPP",
+    "file": "/home/liwinux/Desktop/Projet_CPP/main.cpp",
+    "output": "/home/liwinux/Desktop/Projet_CPP/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
+      "-I",
+      "Classes/Modele/",
+      "-I",
+      "Classes/Voiture/",
+      "-I",
+      "Classes/Option/",
+      "-I",
+      "Classes/Personne/",
+      "-I",
+      "Classes/Exception/",
+      "-IClasses/Vecteur/",
+      "-IClasses/Iterateur/",
+      "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
+      "-c",
+      "-g",
       "-pipe",
       "-O2",
       "-std=gnu++11",
@@ -51,6 +108,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -64,7 +122,10 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "-c",
+      "-g",
       "-pipe",
       "-O2",
       "-std=gnu++11",
@@ -100,6 +161,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -113,8 +175,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Modele/Modele.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Modele/Modele.o"
     ],
@@ -125,6 +190,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -138,8 +204,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Voiture/Voiture.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Voiture/Voiture.o"
     ],
@@ -150,6 +219,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -163,8 +233,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Option/Option.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Option/Option.o"
     ],
@@ -175,6 +248,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -188,8 +262,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Personne/Personne.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Personne/Personne.o"
     ],
@@ -200,6 +277,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -213,8 +291,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Personne/Intervenant.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Personne/Intervenant.o"
     ],
@@ -225,6 +306,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -238,8 +320,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Personne/Employe.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Personne/Employe.o"
     ],
@@ -250,6 +335,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -263,8 +349,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Personne/Client.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Personne/Client.o"
     ],
@@ -275,6 +364,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -288,8 +378,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Exception/Exception.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Exception/Exception.o"
     ],
@@ -324,6 +417,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -337,8 +431,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Vecteur/Vecteur.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Vecteur/Vecteur.o"
     ],
@@ -349,6 +446,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -362,8 +460,11 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Iterateur/Iterateur.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Iterateur/Iterateur.o"
     ],
@@ -374,6 +475,7 @@
   {
     "arguments": [
       "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
       "-I",
       "Classes/Modele/",
       "-I",
@@ -387,13 +489,45 @@
       "-IClasses/Vecteur/",
       "-IClasses/Iterateur/",
       "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
       "Classes/Garage/Garage.cpp",
       "-c",
+      "-g",
       "-o",
       "Classes/Garage/Garage.o"
     ],
     "directory": "/home/liwinux/Desktop/Projet_CPP",
     "file": "/home/liwinux/Desktop/Projet_CPP/Classes/Garage/Garage.cpp",
     "output": "/home/liwinux/Desktop/Projet_CPP/Classes/Garage/Garage.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/x86_64-linux-gnu-g++-10",
+      "-g",
+      "-I",
+      "Classes/Modele/",
+      "-I",
+      "Classes/Voiture/",
+      "-I",
+      "Classes/Option/",
+      "-I",
+      "Classes/Personne/",
+      "-I",
+      "Classes/Exception/",
+      "-IClasses/Vecteur/",
+      "-IClasses/Iterateur/",
+      "-IClasses/Garage/",
+      "-I",
+      "Classes/Contrat/",
+      "Classes/Contrat/Contrat.cpp",
+      "-c",
+      "-g",
+      "-o",
+      "Classes/Contrat/Contrat.o"
+    ],
+    "directory": "/home/liwinux/Desktop/Projet_CPP",
+    "file": "/home/liwinux/Desktop/Projet_CPP/Classes/Contrat/Contrat.cpp",
+    "output": "/home/liwinux/Desktop/Projet_CPP/Classes/Contrat/Contrat.o"
   }
 ]

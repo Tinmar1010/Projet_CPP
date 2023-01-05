@@ -14,6 +14,7 @@
 #include "Client.h"
 #include "Vecteur.h"
 #include "Iterateur.h"
+#include "Contrat.h"
 
 
 
@@ -27,6 +28,7 @@ class Garage
         Vecteur<Client> clients;
         Vecteur<Modele> modeles;
         Vecteur<Option> options;
+        Vecteur<Contrat> contrats;
 
         static Garage instance;
 
@@ -65,13 +67,18 @@ class Garage
         void supprimeEmployeParIndice(int);
         void supprimeEmployeParNumero(int);
 
+        void ajouteContrat(int, Employe*, Client*, string);
+        void afficheContrats()const;
+        void supprimeContratParIndice(int);
+
         void importeModeles(string);
         void importeOptions(string);
 
         Vecteur <Modele> getModeles();
         Vecteur <Option> getOptions();
         Vecteur <Employe> &getEmployes();
-        Vecteur <Client> getClients();
+        Vecteur <Client> &getClients();
+        Vecteur <Contrat> &getContrat();
 
         static Employe* pE;
 

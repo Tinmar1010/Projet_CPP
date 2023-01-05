@@ -6,6 +6,7 @@
 #include "Option.h"
 #include "Modele.h"
 #include "Employe.h"
+#include "Contrat.h"
 
 using namespace std;
 

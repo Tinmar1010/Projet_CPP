@@ -114,6 +114,31 @@ void Garage :: supprimeClientParNumero(int num)
             Client :: numCourant = (Client :: numCourant - 1);
     }
 }    
+void Garage :: ajouteContrat(int num, Employe* e, Client* c, string nom)
+{
+    Contrat cont;
+
+                
+    cont.setNomprojet(nom);
+    cont.setNumero(num);
+    cont.setClient(c);
+    cont.setVendeur(e);
+    
+    contrats.insere(cont);
+    Contrat :: numContrat = Contrat :: numContrat + 1;
+}
+void Garage::afficheContrats()const
+{
+    
+}
+void Garage :: supprimeContratParIndice(int num)
+{
+    if(num < contrats.size()&&Contrat::numContrat>=0)
+    {
+        contrats.retire(num);
+        Contrat :: numContrat = (Contrat::numContrat -1);
+    }
+}
 
 
 void Garage :: ajouteEmploye(string nom,string prenom,string login,string fonction)
@@ -237,6 +262,8 @@ Vecteur<Modele> Garage :: getModeles()
     return modeles;
 }
 
+// TODO : retourner references comme pour employe
+
 Vecteur<Option> Garage :: getOptions()
 {
     return options;
@@ -245,14 +272,20 @@ Vecteur <Employe> &Garage :: getEmployes()
 {
     return employes;
 }
-Vecteur <Client> Garage :: getClients()
+Vecteur <Client> &Garage :: getClients()
 {
     return clients;
+}
+
+Vecteur <Contrat> &Garage::getContrat()
+{
+    return contrats;
 }
 void Garage ::Save(ofstream &fichier)
 {
     int i;
     int tmp;
+    int temp_contrat;
 
     if (!fichier)
     {
@@ -269,7 +302,6 @@ void Garage ::Save(ofstream &fichier)
         i = 0;
         // Pour chaque employe on le save
         while (tmp>0 && i< employes.size()){
-            cout << employes[i] << endl;
             employes[i++].Save(fichier);
         }
 
@@ -281,8 +313,21 @@ void Garage ::Save(ofstream &fichier)
         
         // Pour chaque client on le save
         while (tmp>0 &&i < clients.size()){
-            cout << clients[i] << endl;
             clients[i++].Save(fichier);
+        }
+        
+        tmp = contrats.size();
+        fichier.write((char*)&Contrat::numContrat, sizeof(Contrat::numContrat));
+        fichier.write((char*)&tmp, sizeof(tmp));
+
+        i = 0;
+        
+        while (tmp >0 && i < contrats.size()) {
+            temp_contrat = contrats[i].getVendeur()->numCourant;
+            fichier.write((char*)&temp_contrat, sizeof(temp_contrat)); // Enregistrement du num unique vendeur 
+            temp_contrat = contrats[i].getClient()->numCourant;
+            fichier.write((char*)&temp_contrat, sizeof(temp_contrat)); // Enregistrement du num unique client
+            contrats[i++].Save(fichier);
         }
 
     }
@@ -313,11 +358,52 @@ void Garage ::Load(ifstream & fichier)
 
     i = 0;
 
-    while (clients.size()>0 && i < tmp)
+    while (i < tmp)
     {
         tmp_c.Load(fichier);
         clients.insere(tmp_c);
         i++;
     }
-            
+
+    fichier.read((char*)&tmp, sizeof(int)); // NumCourant de contrat
+    Contrat::numContrat = tmp;
+    fichier.read((char*)&tmp, sizeof(tmp)); // Nombre de contrats
+    
+    i = 0;
+    int j = 0;
+    int num_vendeur;
+    int num_client;
+
+    Employe *addr_vendeur;
+    Client *addr_client;
+
+    while (i < tmp) // Boucle pour chaque contrat
+    {   
+        // Lecture du numero de vendeur et copie de son adresse
+        fichier.read((char*)&num_vendeur, sizeof(num_vendeur));
+
+        j = 0;
+        while (employes[j].getNumero() != num_vendeur)
+            j++;
+        if (employes[j].getNumero() == num_vendeur)
+        {  
+            addr_vendeur = &employes[j];
+        }
+
+        // Lecture du numero du client et copie de son adresse
+
+        fichier.read((char*)&num_client, sizeof(num_client));
+        j = 0;
+        while (clients[j].getNumero() != num_client)
+            j++;
+        
+        if (clients[j].getNumero() == num_client)
+            addr_client = &clients[j];
+
+        Contrat tmp_cont(0, addr_vendeur, addr_client, "");
+        tmp_cont.Load(fichier);
+        contrats.insere(tmp_cont);
+        i++;
+        //Et la paf ça fait des chocapics
+    }      
 }

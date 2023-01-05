@@ -60,3 +60,5 @@ template class Vecteur <Voiture>;
 template class Iterateur <Option>;
 template class Iterateur<Modele>;
 template class Iterateur<Employe>;
+#include "Contrat.h"
+template class Iterateur<Contrat>;

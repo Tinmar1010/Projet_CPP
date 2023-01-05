@@ -145,6 +145,7 @@ ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent), u
         fichier.close();
         dialogueMessage("Chargement", "Chargement réussi !");
     }
+    
     Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
     Iterateur<Employe> ite(tmp);
     ite.reset();
@@ -157,6 +158,33 @@ ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent), u
         i++;
         ite++;
     }
+
+    Vecteur<Client> tmpc = Garage::getInstance().getClients();
+    Iterateur<Client> itc(tmpc);
+    itc.reset();
+    
+    i = 0;
+
+    while (!itc.end())
+    {
+        ajouteTupleTableClients(tmpc[i].Tuple());
+        i++;
+        itc++;
+    }
+
+    Vecteur<Contrat> tmpcontrat = Garage::getInstance().getContrat();
+    Iterateur<Contrat> itcontrat(tmpcontrat);
+    itcontrat.reset();
+    
+    i = 0;
+
+    while (!itcontrat.end())
+    {
+        ajouteTupleTableContrats(tmp[i].Tuple());
+        i++;
+        itcontrat++;
+    }
+    
     setRole(); // acces a tout pour l'instant
 
 }
@@ -1218,12 +1246,69 @@ void ApplicGarageWindow::on_pushButtonNouveauProjet_clicked()
 void ApplicGarageWindow::on_pushButtonNouveauContrat_clicked()
 {
     // TO DO (étape 13)
+
+    int j = getIndiceClientSelectionne();
+    if (j > -1)
+    {
+
+        int num = Contrat :: numContrat;
+        Employe *ptr = Garage::getInstance().pE;
+        Client &pC = Garage :: getInstance().getClients()[j];
+        Contrat cont(num, ptr, &pC, getNomProjetEnCours());
+
+        ajouteTupleTableContrats(cont.Tupple());
+        Garage::getInstance().ajouteContrat(num, ptr, &pC, getNomProjetEnCours());
+
+        videTableContrats();
+        Vecteur<Contrat> tmp = Garage::getInstance().getContrat();
+        Iterateur<Contrat> ite(tmp);
+        ite.reset();
+
+        int j = 0;
+
+        while (!ite.end())
+        {
+            ajouteTupleTableContrats(tmp[j].Tupple());
+            j++;
+            ite++;
+        }
+
+    }
+    else
+    {
+        dialogueErreur("Contrat", "vous devez selectionne un client !");
+    }
+    
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_pushButtonSupprimerContrat_clicked()
 {
     // TO DO (étape 13)
+
+    int i = getIndiceContratSelectionne();
+    if(i<0)
+        dialogueErreur("Contrat", "Contrat non selectionné");
+    else
+    {
+        Garage ::getInstance().supprimeContratParIndice(i);
+        
+        videTableContrats();
+        Vecteur<Contrat> tmp = Garage::getInstance().getContrat();
+        Iterateur<Contrat> ite(tmp);
+        ite.reset();
+
+        int j = 0;
+
+        while (!ite.end())
+        {
+            ajouteTupleTableContrats(tmp[j].Tupple());
+            j++;
+            ite++;
+        }
+    }
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

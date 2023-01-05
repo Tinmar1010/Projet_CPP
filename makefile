@@ -7,6 +7,7 @@ CLASSESVE=Classes/Vecteur/
 CLASSESIT= Classes/Iterateur/
 CLASSESVET=Classes/VecteurTrie/
 CLASSESG = Classes/Garage/
+CLASSESCO = Classes/Contrat/
 
 OBJSM=Classes/Modele/Modele.o
 OBJSV=Classes/Voiture/Voiture.o
@@ -16,6 +17,8 @@ OBJSP=Classes/Personne/Personne.o
 OBJSI=Classes/Personne/Intervenant.o
 OBJSE=Classes/Personne/Employe.o
 OBJSC=Classes/Personne/Client.o
+OBJSCO = Classes/Contrat/Contrat.o
+
 PERS = $(OBJSP) $(OBJSI) $(OBJSE) $(OBJSC)
 
 OBJSEX=Classes/Exception/Exception.o
@@ -30,19 +33,18 @@ VEC= $(OBJSVE) $(OBJSIT)
 OBJSG = Classes/Garage/Garage.o
 
 
-
 OBJS_QT = main.o  applicgaragewindow.o moc_applicgaragewindow.o
 
 PROGRAMS = ApplicGarage
 
 
-CO=g++ -g -I $(CLASSESM) -I $(CLASSESV) -I $(CLASSESO) -I $(CLASSESP) -I $(CLASSESE) -I$(CLASSESVE) -I$(CLASSESIT) -I$(CLASSESG) 
+CO=g++ -g -I $(CLASSESM) -I $(CLASSESV) -I $(CLASSESO) -I $(CLASSESP) -I $(CLASSESE) -I$(CLASSESVE) -I$(CLASSESIT) -I$(CLASSESG) -I $(CLASSESCO)
 
 all:	$(PROGRAMS)
 
-ApplicGarage:	 $(OBJS_QT) $(OBJSM) $(OBJSV) $(OBJSO) $(PERS) $(EXEC) $(VEC) $(OBJSG)
+ApplicGarage:	 $(OBJS_QT) $(OBJSM) $(OBJSV) $(OBJSO) $(PERS) $(EXEC) $(VEC) $(OBJSG) $(OBJSCO)
 		echo "Creation de ApplicGarage..."
-		$(CO) $(OBJSM) $(OBJSV) $(OBJSO) $(PERS) $(EXEC) $(VEC) $(OBJSG) $(OBJS_QT) -Wl,-O1 -o ApplicGarage  -g /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread
+		$(CO) $(OBJSM) $(OBJSV) $(OBJSO) $(PERS) $(EXEC) $(VEC) $(OBJSG) $(OBJS_QT) $(OBJSCO) -Wl,-O1 -o ApplicGarage  -g /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread
 
 main.o:		main.cpp
 	echo "Creation de main.o"
@@ -110,13 +112,17 @@ $(OBJSVET):	$(CLASSESVET)VecteurTrie.cpp
 	echo "Creation de vecteurTrie.o"
 	$(CO) $(CLASSESVET)VecteurTrie.cpp -c -g -o $(OBJSVET)
 
-$(OBJSG):	$(CLASSESG)Garage.cpp
+$(OBJSG): $(CLASSESG)Garage.cpp
 	echo "Creation de Garage.o"
 	$(CO) $(CLASSESG)Garage.cpp -c -g -o $(OBJSG)
+
+$(OBJSCO): $(CLASSESCO)Contrat.cpp
+	echo "Creation de Contrat.cpp"
+	$(CO) $(CLASSESCO)Contrat.cpp -c -g -o $(OBJSCO)
 	
 
 clean:
-	rm $(CLASSESM)*.o $(CLASSESV)*.o $(CLASSESO)*.o $(CLASSESP)*.o $(CLASSESE)*.o $(CLASSESVE)*.o $(CLASSESIT)*.o $(CLASSESG)*.o $(OBJS_QT)
+	rm $(CLASSESM)*.o $(CLASSESV)*.o $(CLASSESO)*.o $(CLASSESP)*.o $(CLASSESE)*.o $(CLASSESVE)*.o $(CLASSESIT)*.o $(CLASSESG)*.o $(OBJS_QT) $(OBJSCO)
 
 clobber:	clean
 	@rm -f tags $(PROGRAMS) *~ *.log

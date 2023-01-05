@@ -99,3 +99,4 @@ template class Vecteur<Client>;
 template class Vecteur<Employe>;
 template class Vecteur<Modele>;
 template class Vecteur<Option>;
+template class Vecteur<Contrat>;
