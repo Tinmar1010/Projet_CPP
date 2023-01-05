@@ -122,18 +122,43 @@ ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent), u
     // Ouverture (et/ou creation) du fichier Garage.data (étape 12)
     // TO DO
 
+    ifstream fichier("Garage.data", ios::in);
+
+    if (!fichier)
+    {
+        ofstream fichier_out("Garage.data", ios::out);
+        if (!fichier_out)
+        {
+            dialogueMessage("Chargement", "Impossible de sauvegarder le projet en cours !");
+
+        }
+        else{
+            
+            Garage:: getInstance().ajouteEmploye("Emma", "Karen Ah", "Emma", "Administratif");
+            Garage::getInstance().Save(fichier_out);
+            fichier_out.close();
+        }
+    }
+    else
+    {
+        Garage::getInstance().Load(fichier);
+        fichier.close();
+        dialogueMessage("Chargement", "Chargement réussi !");
+    }
+    Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
+    Iterateur<Employe> ite(tmp);
+    ite.reset();
+    
+    i = 0;
+
+    while (!ite.end())
+    {
+        ajouteTupleTableEmployes(tmp[i].Tuple());
+        i++;
+        ite++;
+    }
     setRole(); // acces a tout pour l'instant
 
-    //******* EXEMPLES (A SUPPRIMER) *******************************************
-
-    // setTableOption(1,"XY08","Toit ouvrant",850.0);
-    ajouteOptionDisponible("Peinture metallisee", 450.0);
-    ajouteOptionDisponible("Systeme GPS", 1100.0);
-    // setModele("Peugeot 308",120,1,22300.0,"308.jpg"); */
-    ajouteTupleTableEmployes("2;Wagner;Jean-Marc;Vendeur");
-    ajouteTupleTableClients("8;Leonard;Anne;0475/47.25.36");
-    ajouteTupleTableContrats("3;Wagner Jean-Marc;Quettier Patrick;508_ProjetQuettier");
-    //**************************************************************************
 }
 
 ApplicGarageWindow::~ApplicGarageWindow()
@@ -670,6 +695,17 @@ float ApplicGarageWindow::dialogueDemandeFloat(const char *titre, const char *qu
 void ApplicGarageWindow::on_actionQuitter_triggered()
 {
     // TO DO (étape 12)
+    ofstream fichier_out("Garage.data", ios::out);
+    if (!fichier_out)
+    {
+        dialogueErreur("Sauvegarde", "Impossible de sauvegarder le projet !");
+
+    }
+    else
+    {
+        Garage ::getInstance().Save(fichier_out);
+        fichier_out.close();
+    }
 
     QApplication::exit();
 }
@@ -681,6 +717,17 @@ void ApplicGarageWindow::closeEvent(QCloseEvent *event)
     {
     } // pour éviter le warning
       // TO DO (étape 12)
+    ofstream fichier_out("Garage.data", ios::out);
+    if (!fichier_out)
+    {
+        dialogueErreur("Sauvegarde", "Impossible de sauvegarder le projet !");
+
+    }
+    else
+    {
+        Garage ::getInstance().Save(fichier_out);
+        fichier_out.close();
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -841,28 +888,94 @@ void ApplicGarageWindow::on_actionSupprimerEmploye_selection_triggered()
 void ApplicGarageWindow::on_actionAjouterClient_triggered()
 {
     // TO DO (étape 11)
+    string nom = dialogueDemandeTexte("Nouvel employé(e)", "Nom : ");
+    string prenom = dialogueDemandeTexte("Nouvel employé(e)", "Prenom : ");
+    string gsm = dialogueDemandeTexte("Nouvel employé(e)", "Gsm :");
+
+    if ((nom == "" || prenom == "" || gsm == ""))
+        dialogueErreur("Nouvel employé(e)", "Problème d'encodage");
+    
+    else 
+    {
+        Garage :: getInstance().ajouteClient(nom, prenom, gsm);
+
+        
+        videTableEmployes();
+        Vecteur<Client> tmp = Garage::getInstance().getClients();
+        Iterateur<Client> ite(tmp);
+        ite.reset();
+        
+        int i = 0;
+
+        while (!ite.end())
+        {
+            ajouteTupleTableClients(tmp[i].Tuple());
+            i++;
+            ite++;
+        }
+
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionSupprimerClient_par_numero_triggered()
 {
     // TO DO (étape 11)
+     int i = dialogueDemandeInt("Employé", "Numéro : ");
+    
+    Garage :: getInstance().supprimeClientParNumero(i);
+    
+    videTableClients();
+    Vecteur<Client> tmp = Garage::getInstance().getClients();
+    Iterateur<Client> ite(tmp);
+    ite.reset();
+    
+    int j = 0;
+
+    while (!ite.end())
+    {
+        ajouteTupleTableClients(tmp[j].Tuple());
+        j++;
+        ite++;
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionSupprimerClient_selection_triggered()
 {
     // TO DO (étape 11)
+    int j = getIndiceClientSelectionne();
+
+    if (j==-1)
+        dialogueErreur("Erreur", "Pas de client selectionné");
+    else
+    {
+        Garage::getInstance().supprimeClientParIndice(j);
+    
+        videTableClients();
+        Vecteur<Client> tmp = Garage::getInstance().getClients();
+        Iterateur<Client> ite(tmp);
+        ite.reset();
+        
+        int j = 0;
+
+        while (!ite.end())
+        {
+            ajouteTupleTableClients(tmp[j].Tuple());
+            j++;
+            ite++;
+        }
+    }   
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionLogin_triggered()
 {
     // TO DO (étape 11)
-    string mdp;
+    string mdp, mdpTemp;
     string login = dialogueDemandeTexte("Nouvel employé(e)", "Login : ");
 
-    Vecteur<Employe> tmp = Garage::getInstance().getEmployes();
+    Vecteur<Employe> &tmp = Garage::getInstance().getEmployes();
     Iterateur<Employe> ite(tmp);
     ite.reset();
         
@@ -881,17 +994,21 @@ void ApplicGarageWindow::on_actionLogin_triggered()
 
         mdp = dialogueDemandeTexte("Login", "Entrez un mot de passe : ");
         Garage::getInstance().pE = &tmp[j];
+
+        cout << Garage::getInstance().pE << endl;
+        cout << *Garage::getInstance().pE << endl;
         try
         {
-            mdp = Garage :: getInstance().pE->getMotDePasse();
+            mdpTemp = Garage :: getInstance().pE->getMotDePasse();
         }
-        catch (PasswordException p)
+        catch (PasswordException &p)
         {
             try
             {
-                Garage :: getInstance().pE->setMotDePasse(mdp);    
+                Garage :: getInstance().pE->setMotDePasse(mdp);   
+                mdpTemp = mdp; 
             }
-            catch (PasswordException o)
+            catch (PasswordException &o)
             {
                 dialogueErreur("Login", o.getMessage().c_str());
                 return;
@@ -900,7 +1017,7 @@ void ApplicGarageWindow::on_actionLogin_triggered()
         }
         
         
-        if (mdp == Garage::getInstance().pE->getMotDePasse())
+        if (mdp == mdpTemp)
         {
             if(Garage::getInstance().pE->getFonction() == "Vendeur")
             {
@@ -918,7 +1035,10 @@ void ApplicGarageWindow::on_actionLogin_triggered()
             dialogueErreur("Login", "Mauvais Mot de passe !");
         }
     }
-        
+    
+    cout << Garage::getInstance().pE << endl;
+    cout << *Garage::getInstance().pE << endl;
+    cout << (*Garage::getInstance().pE).getMotDePasse() << endl;
     
 }
 
@@ -934,7 +1054,6 @@ void ApplicGarageWindow::on_actionLogout_triggered()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ApplicGarageWindow::on_actionReset_Mot_de_passe_triggered()
 {
-    // TODO : Bug : invalid address
     // TO DO (étape 11)
     Garage :: getInstance().pE->ResetMotDePasse();
     

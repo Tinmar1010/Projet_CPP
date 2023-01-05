@@ -3,6 +3,7 @@
 
 
 #include<iostream>
+#include <fstream>
 #include<string.h>
 #include <string>
 
@@ -31,6 +32,9 @@ class Personne
         void setPrenom(string);
 
         Personne& operator=(const Personne&);
+
+        void Save(ofstream &);
+        void Load(ifstream &);
 
 };
 

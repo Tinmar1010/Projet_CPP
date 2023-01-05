@@ -65,3 +65,27 @@ istream& operator>>(istream& in, Personne& p)
 
     return in;
 }
+void Personne :: Save(ofstream & fichier)
+{
+    
+    int tailleN =nom.size();
+    fichier.write((char*)&tailleN, sizeof(int));
+    fichier.write((char*)nom.data(), tailleN*(sizeof(char)));
+
+    int tailleP = prenom.size();
+    fichier.write((char*)&tailleP, sizeof(int));
+    fichier.write((char*)prenom.data(), tailleP*(sizeof(char)));
+}
+void Personne :: Load(ifstream & fichier)
+{
+   
+    int tailleN, tailleP;
+
+    fichier.read((char*)&tailleN, sizeof(int));
+    nom.resize(tailleN);
+    fichier.read((char*)nom.data(), tailleN*(sizeof(char)));
+
+    fichier.read((char*)&tailleP, sizeof(int));
+    prenom.resize(tailleP);
+    fichier.read((char*)prenom.data(), tailleP*(sizeof(char)));
+}

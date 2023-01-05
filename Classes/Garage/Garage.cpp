@@ -10,8 +10,7 @@ Garage :: Garage()
     modeles = Vecteur <Modele>(50);
     options = Vecteur <Option>(50);
     employes = Vecteur <Employe>(50);
-
-    ajouteEmploye("Emma", "Karen Ah", "Emma", "Administratif");
+    clients = Vecteur <Client>(50);
 }
 Garage :: ~Garage()
 {
@@ -221,7 +220,83 @@ Vecteur<Option> Garage :: getOptions()
 {
     return options;
 }
-Vecteur <Employe> Garage :: getEmployes()
+Vecteur <Employe> &Garage :: getEmployes()
 {
     return employes;
+}
+Vecteur <Client> Garage :: getClients()
+{
+    return clients;
+}
+void Garage ::Save(ofstream &fichier)
+{
+    int i;
+    int tmp;
+
+    if (!fichier)
+    {
+        cout<<"Erreur d'ouverture !"<<endl;
+        exit(1);
+    }
+    else
+    {
+        tmp = employes.size();
+        cout<<"Temp d'employé : "<<tmp<<endl;
+        fichier.write((char*)&Intervenant::numCourant, sizeof(Intervenant::numCourant)); // Enregistrement de numcourant 1 fois
+        fichier.write((char*)&tmp, sizeof(int)); // Enregistement du nombres d'employe
+        
+        i = 0;
+        // Pour chaque employe on le save
+        while (tmp>0 && i< employes.size()){
+            cout << employes[i] << endl;
+            employes[i++].Save(fichier);
+        }
+
+        
+        tmp = clients.size();
+        cout<<"Temp client : "<<tmp<<endl;
+        fichier.write((char*)&tmp, sizeof(int)); // Enregistement du nombre de client
+        i = 0;
+        
+        // Pour chaque client on le save
+        while (tmp>0 &&i < clients.size()){
+            cout << clients[i] << endl;
+            clients[i++].Save(fichier);
+        }
+
+    }
+
+
+}
+void Garage ::Load(ifstream & fichier)
+{
+    int i = 0;
+    int tmp;
+
+    Employe tmp_e;
+    Client tmp_c;
+
+    fichier.read((char*)&Intervenant::numCourant, sizeof(Intervenant::numCourant));
+    fichier.read((char*)&tmp, sizeof(tmp)); // Nombre d'employe
+
+    i = 0;
+
+    while (i < tmp)
+    {
+        tmp_e.Load(fichier);
+        employes.insere(tmp_e);
+        i++;
+    }
+
+    fichier.read((char*)&tmp, sizeof(tmp)); // Nombre de client
+
+    i = 0;
+
+    while (clients.size()>0 && i < tmp)
+    {
+        tmp_c.Load(fichier);
+        clients.insere(tmp_c);
+        i++;
+    }
+            
 }

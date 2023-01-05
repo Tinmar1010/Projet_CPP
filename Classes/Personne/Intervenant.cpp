@@ -62,3 +62,20 @@ istream& operator>>(istream& in, Intervenant& i)
     
     return in;
 }
+
+void Intervenant :: Save(ofstream &fichier)
+{
+    
+    fichier.write((char*)&numIntervenant, sizeof(int));
+
+    Personne :: Save(fichier);    
+}
+
+
+void Intervenant :: Load(ifstream & fichier)
+{
+    
+    fichier.read((char*)&numIntervenant, sizeof(int));
+
+    Personne :: Load(fichier);
+}

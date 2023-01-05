@@ -70,9 +70,13 @@ class Garage
 
         Vecteur <Modele> getModeles();
         Vecteur <Option> getOptions();
-        Vecteur <Employe> getEmployes();
+        Vecteur <Employe> &getEmployes();
+        Vecteur <Client> getClients();
 
         static Employe* pE;
+
+        void Save(ofstream &);
+        void Load(ifstream &);
 };
 
 #endif

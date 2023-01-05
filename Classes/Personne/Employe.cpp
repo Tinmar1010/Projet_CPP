@@ -55,10 +55,11 @@ void Employe :: setMotDePasse(string mdp)
     if (compteuralpha == 0)
         throw(PasswordException("Mot de passe ne contenant pas de lettre", 2));
 
-    cout<<"Je passe"<<endl;
+    if (motDePasse != NULL)
+        delete motDePasse;
+        
     motDePasse = new string;
     *motDePasse = mdp;
-    cout<<"Je passe"<<endl;
     
 }
 void Employe :: ResetMotDePasse()
@@ -149,4 +150,59 @@ string Employe :: Tuple()
     chaine = to_string(getNumero()) + ';' + getNom() + ';' + getPrenom() + ';' + getFonction();
 
     return chaine; 
+}
+
+void Employe::Save(ofstream &fichier)
+{
+    
+    int taille = login.size();
+    fichier.write((char*)&taille, sizeof(taille));
+    fichier.write((char*)login.data(), taille*(sizeof(char)));
+
+    if (motDePasse != NULL)
+    {
+        taille = motDePasse->size();
+        fichier.write((char*)&taille, sizeof(taille));
+        fichier.write((char*)(*motDePasse).data(), taille*(sizeof(char)));
+        
+    }
+    else
+    {
+        taille = 0;
+        fichier.write((char*)&taille, sizeof(taille));
+    }
+    
+    taille = fonction.size();
+    
+    fichier.write((char*)&taille, sizeof(taille));
+    fichier.write((char*)fonction.data(), taille*(sizeof(char)));
+
+    Intervenant :: Save(fichier);
+    
+    
+}
+
+void Employe::Load(ifstream &fichier)
+{
+    int tailleL, tailleM, tailleF;
+    string tmp; // Varibale tempon utilise car motDePasse est a NULL 
+
+    fichier.read((char*)&tailleL, sizeof(int));
+    login.resize(tailleL);
+    fichier.read((char*)login.data(), tailleL*(sizeof(char)));
+    
+    fichier.read((char*)&tailleM, sizeof(int));
+    if(tailleM!=0)
+    {
+        tmp.resize(tailleM);
+        fichier.read((char*)tmp.data(), tailleM*(sizeof(char)));
+        setMotDePasse(tmp);  // Allocation de MotDePasse avec l'appelle d'ou la var tempon
+    }
+
+    fichier.read((char*)&tailleF, sizeof(int));
+    fonction.resize(tailleF);
+    fichier.read((char*)fonction.data(), tailleF*(sizeof(char)));
+    
+    Intervenant :: Load(fichier);
+
 }

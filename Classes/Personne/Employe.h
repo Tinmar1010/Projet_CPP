@@ -40,6 +40,9 @@ class Employe : public Intervenant
         string Tuple();
         
         Employe& operator=(const Employe &);
+
+        void Save(ofstream &);
+        void Load(ifstream &);
 };
 
 

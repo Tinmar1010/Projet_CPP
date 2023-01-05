@@ -32,6 +32,9 @@ class Client : public Intervenant
 
         Client& operator=(const Client &);
 
+        void Save(ofstream &);
+        void Load(ifstream &);
+
 };  
 
 #endif

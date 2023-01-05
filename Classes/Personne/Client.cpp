@@ -78,3 +78,23 @@ string Client :: Tuple()
     chaine = to_string(getNumero()) + ';' + getNom() + ';' + getPrenom() + ';' + getGsm();
     return chaine;
 }
+void Client :: Save(ofstream & fichier)
+{
+    int tailleG = gsm.size();
+    fichier.write((char*)&tailleG, sizeof(int));
+    fichier.write((char*)gsm.data(), tailleG*(sizeof(char)));
+    
+    Intervenant :: Save(fichier);
+    
+}
+void Client :: Load(ifstream & fichier)
+{
+
+    int taille;
+
+    fichier.read((char*)&taille, sizeof(int));
+    gsm.resize(taille);
+    fichier.read((char*)gsm.data(), taille*sizeof(char));
+    
+    Intervenant :: Load(fichier);
+}

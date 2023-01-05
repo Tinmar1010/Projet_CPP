@@ -31,6 +31,9 @@ class Intervenant : public Personne
         virtual string ToString()= 0; //N'apparait pas dans le .cpp
         virtual string Tuple()= 0;
         Intervenant& operator=(const Intervenant&);
+
+        void Save(ofstream &);
+        void Load(ifstream &);
 };
 
 
