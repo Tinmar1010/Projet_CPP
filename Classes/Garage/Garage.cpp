@@ -323,9 +323,9 @@ void Garage ::Save(ofstream &fichier)
         i = 0;
         
         while (tmp >0 && i < contrats.size()) {
-            temp_contrat = contrats[i].getVendeur()->numCourant;
+            temp_contrat = contrats[i].getVendeur()->getNumero();
             fichier.write((char*)&temp_contrat, sizeof(temp_contrat)); // Enregistrement du num unique vendeur 
-            temp_contrat = contrats[i].getClient()->numCourant;
+            temp_contrat = contrats[i].getClient()->getNumero();
             fichier.write((char*)&temp_contrat, sizeof(temp_contrat)); // Enregistrement du num unique client
             contrats[i++].Save(fichier);
         }
@@ -379,31 +379,60 @@ void Garage ::Load(ifstream & fichier)
 
     while (i < tmp) // Boucle pour chaque contrat
     {   
-        // Lecture du numero de vendeur et copie de son adresse
         fichier.read((char*)&num_vendeur, sizeof(num_vendeur));
-
-        j = 0;
-        while (employes[j].getNumero() != num_vendeur)
-            j++;
-        if (employes[j].getNumero() == num_vendeur)
-        {  
-            addr_vendeur = &employes[j];
+        addr_vendeur = RechercheEmploye(num_vendeur);
+        if(addr_vendeur == NULL) 
+            i = tmp;
+        else
+        {
+            fichier.read((char*)&num_client, sizeof(num_client));
+            addr_client = RechercheClient(num_client);
+            if (addr_client == NULL)
+                i = tmp;
+            else
+            {
+                
+                Contrat tmp_cont(0, addr_vendeur, addr_client, "");
+                tmp_cont.Load(fichier);
+                contrats.insere(tmp_cont);
+                i++;
+            }
         }
-
-        // Lecture du numero du client et copie de son adresse
-
-        fichier.read((char*)&num_client, sizeof(num_client));
-        j = 0;
-        while (clients[j].getNumero() != num_client)
-            j++;
-        
-        if (clients[j].getNumero() == num_client)
-            addr_client = &clients[j];
-
-        Contrat tmp_cont(0, addr_vendeur, addr_client, "");
-        tmp_cont.Load(fichier);
-        contrats.insere(tmp_cont);
-        i++;
-        //Et la paf ça fait des chocapics
     }      
+}
+Employe * Garage :: RechercheEmploye(int num)
+{
+    int i = 0;
+    Iterateur <Employe> it(employes);
+    it.reset();
+    Employe *pe = NULL;
+
+    while(!it.end())
+    {
+        if(employes[i].getNumero() == num)
+        {
+            pe = &employes[i];
+            return pe;
+        }
+            
+        else
+            i++;
+    }
+
+    return pe;
+}
+Client* Garage::RechercheClient(int num)
+{
+    int i;
+    Iterateur<Client> it(clients);
+    it.reset();
+    
+    i = 0;
+    while (!it.end() && clients[i].getNumero() != num)
+       i++;
+    
+    if (clients[i].getNumero() == num)
+        return &clients[i];
+    
+    return NULL;
 }

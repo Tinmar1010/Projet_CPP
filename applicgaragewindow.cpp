@@ -180,12 +180,12 @@ ApplicGarageWindow::ApplicGarageWindow(QWidget *parent) : QMainWindow(parent), u
 
     while (!itcontrat.end())
     {
-        ajouteTupleTableContrats(tmp[i].Tuple());
+        ajouteTupleTableContrats(tmpcontrat[i].Tupple());
         i++;
         itcontrat++;
     }
     
-    setRole(); // acces a tout pour l'instant
+    //setRole(); // acces a tout pour l'instant
 
 }
 
@@ -919,9 +919,9 @@ void ApplicGarageWindow::on_actionSupprimerEmploye_selection_triggered()
 void ApplicGarageWindow::on_actionAjouterClient_triggered()
 {
     // TO DO (étape 11)
-    string nom = dialogueDemandeTexte("Nouvel employé(e)", "Nom : ");
-    string prenom = dialogueDemandeTexte("Nouvel employé(e)", "Prenom : ");
-    string gsm = dialogueDemandeTexte("Nouvel employé(e)", "Gsm :");
+    string nom = dialogueDemandeTexte("Nouvel Client(e)", "Nom : ");
+    string prenom = dialogueDemandeTexte("Nouvel Client(e)", "Prenom : ");
+    string gsm = dialogueDemandeTexte("Nouvel Client(e)", "Gsm :");
 
     if ((nom == "" || prenom == "" || gsm == ""))
         dialogueErreur("Nouveau client(e)", "Problème d'encodage");
@@ -1214,6 +1214,10 @@ void ApplicGarageWindow::on_pushButtonEnregistrerProjet_clicked()
 void ApplicGarageWindow::on_pushButtonOuvrirProjet_clicked()
 {
     // TO DO (étape 9)
+
+    Garage ::resetProjetEnCours();
+    setModele("", 0, 0, 0, "");
+    videTableOption();
     Modele m;
     Option *opt;
     string nom = getNomProjetEnCours();
@@ -1224,7 +1228,7 @@ void ApplicGarageWindow::on_pushButtonOuvrirProjet_clicked()
     setModele(m.getNom(), m.getPuissance(), m.getMoteur(), m.getPrixDeBase(), m.getImage()); // ATTENTION : image s'affiche pas
 
 	int i = 0;
-	while((opt = Garage :: getProjetEnCours()[i]) != NULL)
+	while((opt = Garage :: getProjetEnCours()[i]) != NULL && i < 5)
     {
 		setTableOption(i, opt->getCode(), opt->getIntitule(), opt->getPrix());
 		i++;
@@ -1315,4 +1319,30 @@ void ApplicGarageWindow::on_pushButtonSupprimerContrat_clicked()
 void ApplicGarageWindow::on_pushButtonVisualiserVoiture_clicked()
 {
     // TO DO (étape 13)
+    Option *opt;
+    int i = getIndiceContratSelectionne();
+    if (i < 0)
+    {
+        dialogueErreur("Contrat", "Contrat non selectionné");
+    }
+    else {
+        Contrat cont = Garage :: getInstance().getContrat()[i];
+        string nom = cont.getNomprojet() + ".car";
+        Garage ::resetProjetEnCours();
+        setModele("", 0, 0, 0, "");
+        videTableOption();
+        Garage :: getProjetEnCours().Load(nom);
+        Modele m = Garage ::getProjetEnCours().getModele();
+        setModele(m.getNom(), m.getPuissance(), m.getMoteur(), m.getPrixDeBase(), m.getImage()); // ATTENTION : image s'affiche pas
+
+        int i = 0;
+        while((opt = Garage :: getProjetEnCours()[i]) != NULL && i<5)
+        {
+            setTableOption(i, opt->getCode(), opt->getIntitule(), opt->getPrix());
+            i++;
+        }
+        setPrix(Garage :: getProjetEnCours().getPrix());
+        setNomProjetEnCours(cont.getNomprojet());
+    }
+
 }

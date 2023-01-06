@@ -84,6 +84,9 @@ class Garage
 
         void Save(ofstream &);
         void Load(ifstream &);
+
+        Employe *RechercheEmploye(int);
+        Client *RechercheClient(int);
 };
 
 #endif
